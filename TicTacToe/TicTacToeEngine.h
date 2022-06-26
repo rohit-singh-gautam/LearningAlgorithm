@@ -18,7 +18,7 @@ public:
 	}
 
 	piece getCurrentPlayer() const {
-		board.getCurrentPiece();
+		return board.getCurrentPiece();
 	}
 
 	bool makeMove(const move& m) {

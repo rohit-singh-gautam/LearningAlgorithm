@@ -7,13 +7,15 @@ int main(int argc, char* argv[]) {
 	while (!engine.gameOver()) {
 		int row;
 		int col;
-		std::cout << engine;
-		std::cout << "Enter row: ";
-		std::cin >> row;
-		std::cout << "Enter col: ";
-		std::cin >> col;
 
-		if (!engine.makeMove(move(row, col))) {
+		while(true) {
+			std::cout << engine;
+			std::cout << "Enter row: ";
+			std::cin >> row;
+			std::cout << "Enter col: ";
+			std::cin >> col;
+
+			if (engine.makeMove(move(row, col))) break;
 			std::cout << "Unable to move (" << row << ',' << col << ')' << std::endl;
 		}
 		if (engine.gameOver()) break;

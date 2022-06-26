@@ -4,6 +4,7 @@
 #include "Evaluator.h"
 #include <random>
 #include <iostream>
+#include <limits>
 
 class Intelligence {
 	Board& board;
@@ -17,8 +18,8 @@ public:
 
 	const move getNextMove() {
 		const piece currentPiece = board.getCurrentPiece();
-
-		int bestScore = currentPiece == piece::first ? INT_MAX : INT_MIN;
+		int bestScore = currentPiece == piece::first ?
+			std::numeric_limits<int>::max() : std::numeric_limits<int>::min();
 		const auto allMoves = board.getAllMove();
 
 		std::vector<move> bestMoves;
@@ -68,7 +69,8 @@ public:
 
 		const piece currentPiece = board.getCurrentPiece();
 
-		int bestScore = currentPiece == piece::first ? INT_MAX : INT_MIN;
+		int bestScore = currentPiece == piece::first ? 
+			std::numeric_limits<int>::max() : std::numeric_limits<int>::min();
 		const auto allMoves = board.getAllMove();
 
 		for (const auto& m: allMoves) {

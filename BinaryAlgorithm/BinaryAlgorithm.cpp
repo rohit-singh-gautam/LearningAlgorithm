@@ -75,7 +75,6 @@ auto preorderTraversal(TreeNode<T>* root) {
 		}
 	}
 
-
 	return ans;
 }
 
