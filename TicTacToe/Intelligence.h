@@ -27,7 +27,6 @@ public:
 		for (const auto& m : allMoves) {
 			if (!board.makeMove(m)) continue;
 			int score = minmax();
-			std::cout << std::make_pair(m, score) << "; ";
 			if (!board.undo(m)) throw "Undo must work";
 
 			if (score == bestScore) {
@@ -49,9 +48,6 @@ public:
 				}
 			}
 		}
-
-		std::cout << std::endl;
-		std::cout << "Best moves: " << bestMoves << std::endl;
 
 		auto begin = bestMoves.begin();
 		std::uniform_int_distribution<> dis(0, std::distance(begin, bestMoves.end()) - 1);

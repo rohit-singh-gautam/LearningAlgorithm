@@ -21,20 +21,20 @@ public:
 		return board.getCurrentPiece();
 	}
 
-	bool makeMove(const move& m) {
+	bool make_move(const move& m) {
 		return board.makeMove(m);
 	}
 
-	bool autoMove() {
+	bool auto_move() {
 		const auto m = intelligence.getNextMove();
 		return board.makeMove(m);
 	}
 
-	bool gameOver() const {
+	bool game_over() const {
 		return board.getCount() == 9 || evaluator.score() != 0;
 	}
 
-	piece whoIsWinning() const {
+	piece who_is_winning() const {
 		int score = evaluator.score();
 		if (score < 0) return piece::second;
 		if (score > 0) return piece::first;
@@ -46,8 +46,8 @@ public:
 
 std::ostream& operator<<(std::ostream& o, const TicTacToeEngine& e) {
 	o << e.board;
-	if (e.gameOver()) {
-		const auto whoIsWinning = e.whoIsWinning();
+	if (e.game_over()) {
+		const auto whoIsWinning = e.who_is_winning();
 		o << "GAME OVER - ";
 		if (whoIsWinning == piece::none) {
 			o << "DRAW" << std::endl;

@@ -133,15 +133,15 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& o, const Board& board) {
-	o << "*****" << std::endl;
+	o << "#########" << std::endl;
 	for (int row = 0; row < Board::rowcount; row++) {
-		o << '*';
+		o << '#';
 		for (int col = 0; col < Board::colcount; col++) {
-			o << board[move(row, col)];
+			o << ' ' << board[move(row, col)];
 		}
-		o << '*' << std::endl;
+		o << " #" << std::endl;
 	}
-	o << "*****" << std::endl;
+	o << "#########" << std::endl;
 
 	if (board.getCount() != 9) {
 		o << "Move: " << board.getCount() + 1;

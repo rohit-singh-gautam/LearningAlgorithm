@@ -1,10 +1,12 @@
+#include "tictactoe.h"
 #include "TicTacToeEngine.h"
 #include <iostream>
 
-int main(int argc, char* argv[]) {
-	TicTacToeEngine engine;
+template <typename ttt>
+void test() {
+	ttt engine;
 
-	while (!engine.gameOver()) {
+	while (!engine.game_over()) {
 		int row;
 		int col;
 
@@ -15,16 +17,22 @@ int main(int argc, char* argv[]) {
 			std::cout << "Enter col: ";
 			std::cin >> col;
 
-			if (engine.makeMove(move(row, col))) break;
+			if (engine.make_move({row, col})) break;
 			std::cout << "Unable to move (" << row << ',' << col << ')' << std::endl;
 		}
-		if (engine.gameOver()) break;
+		if (engine.game_over()) break;
 		std::cout << engine;
-		if (!engine.autoMove()) {
+		if (!engine.auto_move()) {
 			std::cout << "Unable to auto move" << std::endl;
 		}
 	}
 
 	std::cout << engine;
+}
+
+int main(int argc, char* argv[]) {
+	test<tictactoe>();
+	test<TicTacToeEngine>();
+
 	return 0;
 }
