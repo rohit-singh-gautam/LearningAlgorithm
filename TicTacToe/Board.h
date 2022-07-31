@@ -3,8 +3,9 @@
 #include <ostream>
 #include <vector>
 #include <assert.h>
+#include <concepts>
 
-enum class piece {
+enum class piece : uint8_t {
 	none,
 	first,
 	second
@@ -65,20 +66,30 @@ public:
 	static constexpr size_t colcount = 3;
 
 private:
-	piece store[rowcount][colcount];
+	union {
+		piece store[rowcount][colcount];
+		piece flat[rowcount * colcount];
+		uint64_t value[2];
+	};
 	int count;
 
 public:
-	Board() : store(), count(0) {}
+	Board() : value { 0, 0 }, count(0) {}
+
+	Board(const std::string &boardcode) : value { 0, 0 }, count(0) {
+		for(int index = 0; index < boardcode.size(); ++index) {
+			const auto ch {boardcode[index]};
+			const auto current_piece {
+				(!!(ch == 'x' or ch == 'X')) +
+				(!!(ch == 'o' or ch == 'O')) * 2
+			};
+			flat[index] = static_cast<piece>(current_piece);
+			count += !!static_cast<bool>(flat[index]);
+		}
+	}
 
 	void reset() {
-		for (int row = 0; row < rowcount; row++) {
-			for (int col = 0; col < colcount; col++) {
-				store[row][col] = piece::none;
-			}
-
-		}
-
+		value[0] = value[1] = 0;
 		count = 0;
 	}
 
@@ -114,6 +125,10 @@ public:
 		return count;
 	}
 
+	uint64_t getValue(std::integral auto index) const {
+		return value[index];
+	}
+
 	std::vector<move> getAllMove() const {
 		std::vector<move> moves;
 		for (int row = 0; row < rowcount; row++) {
@@ -129,6 +144,37 @@ public:
 
 	const piece operator[](const move& m) const {
 		return store[m.row][m.col];
+	}
+
+	piece who_is_winning() const {
+		const auto value {getValue(0)};
+		const auto value_high {getValue(1)};
+
+		const auto result_vertical {
+			(value & 0x00ffffff) & ((value >> 24) & 0x00ffffff) & ((value >> 48) | (value_high << 16))
+		};
+		const auto result_vertical_collected {
+			(result_vertical & 0xff) | ((result_vertical >> 8) & 0xff) | (result_vertical >> 16)
+		};
+
+		const auto result_horizontal {
+			((value & 0xff0000ff0000ff) & ((value >> 8) & 0xff0000ff0000ff) & (((value >> 16) & 0xff0000ff0000ff) | (value_high << 48)))
+		};
+
+		const auto result_horizontal_collected {
+			(result_horizontal & 0xff) | ((result_horizontal >> 24) & 0xff) | (result_horizontal >> 48)
+		};
+
+		const auto result_diagnol1 {
+			value & (value >> 32) & value_high & 0xff
+		};
+
+		const auto result_diagnol2 {
+			(value >> 16) & (value >> 32) & (value >> 48) & 0xff
+		};
+
+		const auto result { result_vertical_collected | result_horizontal_collected | result_diagnol1 | result_diagnol2 };
+		return static_cast<piece>(result);
 	}
 };
 

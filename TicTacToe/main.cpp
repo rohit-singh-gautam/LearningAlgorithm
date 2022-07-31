@@ -30,9 +30,42 @@ void test() {
 	std::cout << engine;
 }
 
+void boardtest() {
+	Board boards[] {
+		{"xxx o  o "},
+		{"o  xxx  o"},
+		{"o   o xxx"},
+		{"x ox  xo "},
+		{"ox  x  xo"},
+		{"o x ox  x"},
+		{"o x xox  "},
+		{"x oox   x"},
+		{"ooo x xx "},
+		{" x ooox x"},
+		{"  x xxooo"},
+		{"o xoxxo  "},
+		{"xox ox o "},
+		{"xxo xo  o"},
+		{"ox  oxx o"},
+		{"x o oxo x"},
+		{"xoxxoxoxo"},
+	};
+
+	for(auto &board: boards) {
+		Evaluator evaluator { board };
+		std::cout << board;
+		int score = evaluator.score();
+		if (score < 0) std::cout << "First winning\n";
+		else if (score > 0) std::cout << "Second winning\n";
+		std::cout << std::endl;
+	}
+
+}
+
 int main(int argc, char* argv[]) {
-	test<tictactoe>();
-	test<TicTacToeEngine>();
+	//test<tictactoe>();
+	//test<TicTacToeEngine>();
+	boardtest();
 
 	return 0;
 }

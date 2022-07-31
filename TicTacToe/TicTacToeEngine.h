@@ -36,8 +36,8 @@ public:
 
 	piece who_is_winning() const {
 		int score = evaluator.score();
-		if (score < 0) return piece::second;
-		if (score > 0) return piece::first;
+		if (score > 0) return piece::second;
+		if (score < 0) return piece::first;
 		return piece::none;
 	}
 
