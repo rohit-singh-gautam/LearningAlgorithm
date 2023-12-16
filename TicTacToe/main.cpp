@@ -63,9 +63,9 @@ void boardtest() {
 }
 
 int main(int argc, char* argv[]) {
-	//test<tictactoe>();
+	test<tictactoe>();
 	//test<TicTacToeEngine>();
-	boardtest();
+	//boardtest();
 
 	return 0;
 }
