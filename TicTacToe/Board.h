@@ -4,8 +4,9 @@
 #include <vector>
 #include <assert.h>
 #include <concepts>
+#include <cstdint>
 
-enum class piece : uint8_t {
+enum class piece : std::uint8_t {
 	none,
 	first,
 	second
