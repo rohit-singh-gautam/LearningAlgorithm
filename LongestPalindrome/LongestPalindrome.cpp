@@ -48,15 +48,19 @@ auto LongestPallindromeSubstring(const std::string &text) {
 int main(int argc, char *argv[]) {
     // This works only for odd palindrom
     std::vector<std::string> values {
-        "abaxabxbaxabb"
+        "abaxabxbaxabb",
+        "a",
+        "aa",
+        "aaa",
+        "aaaaa",
+        "aaaaaaaaaaaaaaaaaaaaaa"
     };
 
     for(auto value: values) {
         auto [center, size] = LongestPallindromeSubstring(value);
         auto start = center - (size - 1) / 2;
-        auto end = center + (size - 1) / 2;
-        auto substr = value.substr(start, end);
-        std::cout << "Original: " << value << ",  " << substr << std::endl;
+        auto substr = value.substr(start, size);
+        std::cout << "Original: (" << value.size() << ") " << value << ", Largest: (" << size << ") " << substr << ", Start: " << start << std::endl;
     }
 
     return 0;
