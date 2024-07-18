@@ -1,6 +1,7 @@
 #include "CaseChange.h"
 #include <iostream>
 #include <typeinfo>
+#include <vector>
 
 
 void DisplayHexOne(const uint8_t val) {
@@ -51,7 +52,7 @@ void TestRepeat() {
     std::cout << std::endl;
 }
 
-void TestToUpper() {
+void TestToUpperFixed() {
     std::cout << "Value 8: ";
     char ch {'a'};
     auto lower8 = CharHelper<1>::is_lower(ch);
@@ -68,6 +69,8 @@ void TestToUpper() {
     std::cout << std::endl;
     CharHelper<2>::to_upper(ch2);
     std::cout << "Upper: " << ch2 << std::endl;
+    CharHelper<2>::to_lower(ch2);
+    std::cout << "Lower: " << ch2 << std::endl;
 
     std::cout << "Value 32: ";
     char ch4[] {"azAZ"};
@@ -79,6 +82,8 @@ void TestToUpper() {
     std::cout << std::endl;
     CharHelper<4>::to_upper(ch4);
     std::cout << "Upper: " << ch4 << std::endl;
+    CharHelper<4>::to_lower(ch4);
+    std::cout << "Lower: " << ch4 << std::endl;
 
     std::cout << "Value 64: ";
     char ch8_[] {"azAZ{}[s"};
@@ -90,6 +95,8 @@ void TestToUpper() {
     std::cout << std::endl;
     CharHelper<8>::to_upper(ch8_);
     std::cout << "Upper: " << ch8_ << std::endl;
+    CharHelper<8>::to_lower(ch8_);
+    std::cout << "Lower: " << ch8_ << std::endl;
 
     std::cout << "Value 128: ";
     char ch16_[] {"azAZ{}[]bBxX .|s"};
@@ -101,6 +108,33 @@ void TestToUpper() {
     std::cout << std::endl;
     CharHelper<16>::to_upper(ch16_);
     std::cout << "Upper: " << ch16_ << std::endl;
+    CharHelper<16>::to_lower(ch16_);
+    std::cout << "Lower: " << ch16_ << std::endl;
+}
+
+
+void TestToUpper() {
+    std::vector<std::string> textlist {
+        "This is a test to check more than 16 characters",
+        "This is a smaller string",
+        "smaller string",
+        "a",
+        "aa",
+        "aaa",
+        "aaaa",
+        "aaaaa"
+    };
+
+
+    for(auto &text: textlist) {
+        std::cout << "Text (" << text.size() << "): " << text << std::endl;
+
+        to_upper(text);
+        std::cout << "Text Upper: " << text << std::endl;
+
+        to_lower(text);
+        std::cout << "Text Lower: " << text << std::endl;
+    }
 }
 
 int main(int argc, char *argv[]) {
