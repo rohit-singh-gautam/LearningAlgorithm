@@ -15,28 +15,8 @@
 
 using namespace std;
 
-std::vector<int> GenerateRandomArray(size_t size, int min_val, int max_val) {
-	vector<int> ret(size);
-	for (size_t i = 0; i < size; i++) {
-		int rnd = (rand() % (max_val - min_val + 1)) + min_val;
-		ret[i] = rnd;
-	}
-	return ret;
-}
-
-std::vector<std::vector<int>> GenerateManyArray(int count, int size, int min_val, int max_val) {
-	vector<vector<int>> arrays(count, vector<int>(size));
-	for (int i = 0; i < count; i++) {
-		for (int j = 0; j < size; j++) {
-			int rnd = (rand() % (max_val - min_val + 1)) + min_val;
-			arrays[i][j] = rnd;
-		}
-	}
-	return arrays;
-}
-
 TestClass::TestClass(std::vector<std::vector<int>> &inarrays, std::string Name)
-	: arrays(inarrays), current(0), elapsed_time(0), InitialSortedAsc(0), InitialSortedDesc(0), SortedAfterExecutionAsc(-1), SortedAfterExecutionDesc(-1), Name(Name) {
+	: arrays(inarrays), NumberOfArraySorted(0), elapsed_time(0), InitialSortedAsc(0), InitialSortedDesc(0), SortedAfterExecutionAsc(-1), SortedAfterExecutionDesc(-1), Name(Name) {
 	for (auto &inarray : inarrays) {
 		auto srtpr = IsSorted(inarray);
 		if (srtpr.first) InitialSortedAsc++;
@@ -44,17 +24,17 @@ TestClass::TestClass(std::vector<std::vector<int>> &inarrays, std::string Name)
 	}
 }
 
-void TestClass::Sort(size_t count) {
-	if (current + count > arrays.size()) return;
+void TestClass::Sort(size_t NumberOfArrayToSort) {
+	if (NumberOfArraySorted + NumberOfArrayToSort > arrays.size()) return;
 	begin_time = std::chrono::high_resolution_clock::now();
 
-	for (size_t i = 0; i < count; i++) {
-		SortAlgorithm(arrays[current + i]);
+	for (size_t i = 0; i < NumberOfArrayToSort; i++) {
+		SortAlgorithm(arrays[NumberOfArraySorted + i]);
 	}
 
 	end_time = std::chrono::high_resolution_clock::now();
 
-	current += count;
+	NumberOfArraySorted += NumberOfArrayToSort;
 	elapsed_time += end_time - begin_time;
 }
 
@@ -202,7 +182,7 @@ void SortTestAddLibrary(vector<vector<int>> &manyarray, vector<TestClass *> &All
 }
 
 void SortTestAddAllSorted(const int arraycount, const int arraysize, vector<TestClass *> &AllTest) {
-	vector<vector<int>> manyarray = GenerateManyArray(arraycount, arraysize, 0, 1000000);
+	vector<vector<int>> manyarray = TestClass::GenerateManyArray(arraycount, arraysize, 0, 1000000);
 	//Pre sorting:
 	for (auto &arr : manyarray) {
 		std::sort(arr.begin(), arr.end());
@@ -219,7 +199,7 @@ void SortTestAddAllSorted(const int arraycount, const int arraysize, vector<Test
 }
 
 void SortTestAddAllReverseSorted(const int arraycount, const int arraysize, vector<TestClass *> &AllTest) {
-	vector<vector<int>> manyarray = GenerateManyArray(arraycount, arraysize, 0, 1000000);
+	vector<vector<int>> manyarray = TestClass::GenerateManyArray(arraycount, arraysize, 0, 1000000);
 	//Pre sorting:
 	for (auto &arr : manyarray) {
 		std::sort(arr.begin(), arr.end(), std::greater<>());
@@ -237,7 +217,7 @@ void SortTestAddAllReverseSorted(const int arraycount, const int arraysize, vect
 
 
 void SortTestAddAllInsertion(const int arraycount, const int arraysize, vector<TestClass *> &AllTest) {
-	vector<vector<int>> manyarray = GenerateManyArray(arraycount, arraysize, 0, 1000000);
+	vector<vector<int>> manyarray = TestClass::GenerateManyArray(arraycount, arraysize, 0, 1000000);
 	SortTestAddInsertion(manyarray, AllTest);
 	SortTestAddInsertion1(manyarray, AllTest);
 	SortTestAddQuick(manyarray, AllTest);
@@ -247,7 +227,7 @@ void SortTestAddAllInsertion(const int arraycount, const int arraysize, vector<T
 
 
 void SortTestAddAll(const int arraycount, const int arraysize, vector<TestClass *> &AllTest) {
-	vector<vector<int>> manyarray = GenerateManyArray(arraycount, arraysize, 0, 1000000);
+	vector<vector<int>> manyarray = TestClass::GenerateManyArray(arraycount, arraysize, 0, 1000000);
 	SortTestAddInsertion(manyarray, AllTest);
 	SortTestAddCustomQuick(manyarray, AllTest);
 	SortTestAddCustomQuickTail(manyarray, AllTest);
