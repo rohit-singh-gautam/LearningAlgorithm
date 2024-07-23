@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void BubbleSort(std::vector<int> &a) {
+inline void BubbleSort(std::vector<int> &a) {
 	auto n = a.size();
 	bool bSorted = false;
 	for (auto i = n - 1; i >= 1 && !bSorted; --i) {
@@ -18,10 +18,13 @@ void BubbleSort(std::vector<int> &a) {
 }
 
 
-TestBubbleSortClass::TestBubbleSortClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Bubble Sort";
-}
+class TestBubbleSortClass : public TestClass {
+public:
+	TestBubbleSortClass(std::vector<std::vector<int>> &inarrays) :
+		TestClass { inarrays, "Bubble Sort" } { }
 
-void TestBubbleSortClass::SortAlgorithm(std::vector<int> &a) {
-	BubbleSort(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		BubbleSort(a);
+	}
+};

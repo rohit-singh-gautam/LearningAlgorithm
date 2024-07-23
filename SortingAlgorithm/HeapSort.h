@@ -6,7 +6,7 @@
 
 using namespace std;
 
-size_t LeafSize(const size_t size) {
+inline size_t LeafSize(const size_t size) {
 	if (size == 0) return 0;
 	size_t temp = size;
 	while ((temp - 1) & temp) {
@@ -16,12 +16,12 @@ size_t LeafSize(const size_t size) {
 	return temp;
 }
 
-size_t ToWidth(const int val) {
+inline size_t ToWidth(const int val) {
 	string str = ToString(val);
 	return str.size();
 }
 
-size_t findMaxWidth(std::vector<int> &a) {
+inline size_t findMaxWidth(std::vector<int> &a) {
 	size_t maxwidth = 0;
 	for (auto &v : a) {
 		size_t width = ToWidth(v);
@@ -30,7 +30,7 @@ size_t findMaxWidth(std::vector<int> &a) {
 	return maxwidth;
 }
 
-void DisplayHeap(std::vector<int> &a) {
+inline void DisplayHeap(std::vector<int> &a) {
 	size_t n = a.size();
 	size_t width = findMaxWidth(a) + 2;
 	size_t leafsize = LeafSize(n);
@@ -52,7 +52,7 @@ void DisplayHeap(std::vector<int> &a) {
 
 
 
-void Heapify(std::vector<int> &a, const size_t root, const size_t last) {
+inline void Heapify(std::vector<int> &a, const size_t root, const size_t last) {
 	size_t parent = root;
 	int val = a[root];
 	size_t leftchild = parent * 2 + 1;
@@ -70,14 +70,14 @@ void Heapify(std::vector<int> &a, const size_t root, const size_t last) {
 	a[parent] = val;
 }
 
-void CreateHeap(std::vector<int> &a) {
+inline void CreateHeap(std::vector<int> &a) {
 	size_t last = a.size() - 1;
 	for (size_t i = (last / 2) + 1; i > 0; i--) {
 		Heapify(a, i - 1, last);
 	}
 }
 
-void HeapSort(std::vector<int> &a, bool bDisplayHeap) {
+inline void HeapSort(std::vector<int> &a, bool bDisplayHeap) {
 	size_t n = a.size();
 	CreateHeap(a);
 	if (bDisplayHeap) {
@@ -90,7 +90,7 @@ void HeapSort(std::vector<int> &a, bool bDisplayHeap) {
 	}
 }
 
-void TestHeapSort(std::vector<vector<int>> manyarray) {
+inline void TestHeapSort(std::vector<vector<int>> manyarray) {
 	vector<int> a{ 3, 4, 6, 9, 20, 88, 34, 5, 56, 32, 33, 83, 74, 17, 27, 7, 1, 2, 93, 31, 16, 43, 63, 68 };
 
 	auto start = std::chrono::high_resolution_clock::now();
@@ -108,10 +108,12 @@ void TestHeapSort(std::vector<vector<int>> manyarray) {
 	std::cout << "HeapSort Elapsed time: " << elapsed.count() << " s\n";
 }
 
-TestHeapSortClass::TestHeapSortClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "HeapSort";
-}
+class TestHeapSortClass : public TestClass {
+public:
+	TestHeapSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "HeapSort" } { }
 
-void TestHeapSortClass::SortAlgorithm(std::vector<int> &a) {
-	HeapSort(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		HeapSort(a);
+	}
+};

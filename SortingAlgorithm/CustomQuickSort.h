@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-size_t CustomPartitionAlgorithm(std::vector<int> &a, size_t start, size_t end) {
+inline size_t CustomPartitionAlgorithm(std::vector<int> &a, size_t start, size_t end) {
 	int pivot;
 
 	auto i = start;
@@ -42,7 +42,7 @@ size_t CustomPartitionAlgorithm(std::vector<int> &a, size_t start, size_t end) {
 	return j;
 }
 
-size_t CustomPartitionAlgorithmInsertion(std::vector<int> &a, size_t start, size_t end) {
+inline size_t CustomPartitionAlgorithmInsertion(std::vector<int> &a, size_t start, size_t end) {
 	int pivot;
 
 	if (end < start + 32) {
@@ -88,14 +88,14 @@ size_t CustomPartitionAlgorithmInsertion(std::vector<int> &a, size_t start, size
 	return j;
 }
 
-void CustomQuickSortRecursiveHelper(std::vector<int> &a, const size_t start, const size_t end) {
+inline void CustomQuickSortRecursiveHelper(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = CustomPartitionAlgorithm(a, start, end);
 	if (part == 0) return;
 	if (start < part - 1) CustomQuickSortRecursiveHelper(a, start, part - 1);
 	if (part + 1 < end) CustomQuickSortRecursiveHelper(a, part + 1, end);
 }
 
-void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start, size_t end) {
 	while (true) {
 		auto part = CustomPartitionAlgorithm(a, start, end);
 		if (part == 0) return;
@@ -129,7 +129,7 @@ void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start, size_
 	}
 }
 
-void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, size_t start, size_t end) {
 	while (true) {
 		auto part = CustomPartitionAlgorithmInsertion(a, start, end);
 		if (part == 0) return;
@@ -163,39 +163,47 @@ void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, size_t sta
 	}
 }
 
-void CustomQuickSortRecursiveTailInsertionHeapHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void CustomQuickSortRecursiveTailInsertionHeapHelper(std::vector<int> &a, size_t start, size_t end) {
 	CreateHeap(a);
 	CustomQuickSortRecursiveTailInsertionHelper(a, start, end);
 }
 
-TestCustomQuickSortClass::TestCustomQuickSortClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Custom QuickSort";
-}
+class TestCustomQuickSortClass : public TestClass {
+public:
+	TestCustomQuickSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Custom QuickSort" } { }
 
-void TestCustomQuickSortClass::SortAlgorithm(std::vector<int> &a) {
-	CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
+	}
+};
 
-TestCustomQuickSortTailClass::TestCustomQuickSortTailClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Custom QuickSort Tail";
-}
+class TestCustomQuickSortTailClass : public TestClass {
+public:
+	TestCustomQuickSortTailClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Custom QuickSort Tail" } { }
 
-void TestCustomQuickSortTailClass::SortAlgorithm(std::vector<int> &a) {
-	CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
+	}
+};
 
-TestCustomQuickSortTailInsertionClass::TestCustomQuickSortTailInsertionClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Custom QuickSort Insertion Tail";
-}
+class TestCustomQuickSortTailInsertionClass : public TestClass {
+public:
+	TestCustomQuickSortTailInsertionClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Custom QuickSort Insertion Tail" } { }
 
-void TestCustomQuickSortTailInsertionClass::SortAlgorithm(std::vector<int> &a) {
-	CustomQuickSortRecursiveTailInsertionHelper(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		CustomQuickSortRecursiveTailInsertionHelper(a, 0, a.size() - 1);
+	}
+};
 
-TestCustomQuickSortTailInsertionHeapClass::TestCustomQuickSortTailInsertionHeapClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Custom QuickSort Insertion Heap Tail";
-}
+class TestCustomQuickSortTailInsertionHeapClass : public TestClass {
+public:
+	TestCustomQuickSortTailInsertionHeapClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Custom QuickSort Insertion Heap Tail" } { }
 
-void TestCustomQuickSortTailInsertionHeapClass::SortAlgorithm(std::vector<int> &a) {
-	CustomQuickSortRecursiveTailInsertionHeapHelper(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		CustomQuickSortRecursiveTailInsertionHeapHelper(a, 0, a.size() - 1);
+	}
+};

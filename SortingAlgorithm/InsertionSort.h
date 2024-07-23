@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void InsertionSort(std::vector<int> &a, int start, int end) {
+inline void InsertionSort(std::vector<int> &a, int start, int end) {
 	auto first = a[start];
 	for (std::size_t i = 1; i <= end; i++) {
 		auto j = i;
@@ -24,7 +24,7 @@ void InsertionSort(std::vector<int> &a, int start, int end) {
 	}
 }
 
-void InsertionSort(std::vector<int> &a) {
+inline void InsertionSort(std::vector<int> &a) {
 	auto n = a.size();
 	for (std::size_t i = 1; i < n; i++) {
 		auto j = i;
@@ -45,7 +45,7 @@ void InsertionSort(std::vector<int> &a) {
 	}
 }
 
-void InsertionSort(int *first, int *last) {
+inline void InsertionSort(int *first, int *last) {
 	for (auto next = first; ++next != last;) {
 		auto next1 = next;
 		auto pivot = *next;
@@ -64,22 +64,24 @@ void InsertionSort(int *first, int *last) {
 	}
 }
 
+class TestInsertionSortClass : public TestClass {
+public:
+	TestInsertionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Insertion Sort" } { }
 
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		InsertionSort(a);
+	}
+};
 
-TestInsertionSortClass::TestInsertionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Insertion Sort";
-}
+class TestInsertionSortClass1 : public TestClass {
+public:
+	TestInsertionSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Insertion Sort Pointer" } { }
 
-void TestInsertionSortClass::SortAlgorithm(std::vector<int> &a) {
-	InsertionSort(a);
-}
-
-TestInsertionSortClass1::TestInsertionSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Insertion Sort Pointer";
-}
-
-void TestInsertionSortClass1::SortAlgorithm(std::vector<int> &a) {
-	int *first = &a.front();
-	int *last = &a.back();
-	InsertionSort(first, last);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		int *first = &a.front();
+		int *last = &a.back();
+		InsertionSort(first, last);
+	}
+};

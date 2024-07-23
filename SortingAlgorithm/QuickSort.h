@@ -7,7 +7,7 @@
 using namespace std;
 
 
-size_t PartitionAlgorithm(std::vector<int> &a, const size_t start, const size_t end) {
+inline size_t PartitionAlgorithm(std::vector<int> &a, const size_t start, const size_t end) {
 	auto pivot = a[start];
 	auto i = start + 1;
 	auto j = end;
@@ -23,7 +23,7 @@ size_t PartitionAlgorithm(std::vector<int> &a, const size_t start, const size_t 
 	return j;
 }
 
-size_t PartitionAlgorithmRand(std::vector<int> &a, const size_t start, const size_t end) {
+inline size_t PartitionAlgorithmRand(std::vector<int> &a, const size_t start, const size_t end) {
 	auto rnd = (rand() % (end - start + 1)) + start;
 	swap(a[start], a[rnd]);
 
@@ -42,7 +42,7 @@ size_t PartitionAlgorithmRand(std::vector<int> &a, const size_t start, const siz
 	return j;
 }
 
-size_t PartitionAlgorithm2(std::vector<int> &a, const size_t start, const size_t end) {
+inline size_t PartitionAlgorithm2(std::vector<int> &a, const size_t start, const size_t end) {
 	const auto pivot = a[end];
 	auto i = start - 1;
 
@@ -57,7 +57,7 @@ size_t PartitionAlgorithm2(std::vector<int> &a, const size_t start, const size_t
 	return i + 1;
 }
 
-size_t PartitionAlgorithmRand2(std::vector<int> &a, const size_t start, const size_t end) {
+inline size_t PartitionAlgorithmRand2(std::vector<int> &a, const size_t start, const size_t end) {
 	auto rnd = (rand() % (end - start + 1)) + start;
 	swap(a[end], a[rnd]);
 
@@ -75,7 +75,7 @@ size_t PartitionAlgorithmRand2(std::vector<int> &a, const size_t start, const si
 	return i + 1;
 }
 
-void QuickSortRecursiveHelper1(std::vector<int> &a, size_t start, size_t end) {
+inline void QuickSortRecursiveHelper1(std::vector<int> &a, size_t start, size_t end) {
 
 	while (true) {
 		auto part = PartitionAlgorithm(a, start, end);
@@ -108,28 +108,28 @@ void QuickSortRecursiveHelper1(std::vector<int> &a, size_t start, size_t end) {
 	}
 }
 
-void QuickSortRecursiveHelper2(std::vector<int> &a, const size_t start, const size_t end) {
+inline void QuickSortRecursiveHelper2(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithm2(a, start, end);
 
 	if (start + 1 < part) QuickSortRecursiveHelper2(a, start, part - 1);
 	if (part + 1 < end) QuickSortRecursiveHelper2(a, part + 1, end);
 }
 
-void QuickSortRecursiveHelperRand(std::vector<int> &a, const size_t start, const size_t end) {
+inline void QuickSortRecursiveHelperRand(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithmRand(a, start, end);
 
 	if (start + 1 < part) QuickSortRecursiveHelperRand(a, start, part - 1);
 	if (part + 1 < end) QuickSortRecursiveHelperRand(a, part + 1, end);
 }
 
-void QuickSortRecursiveHelperRand2(std::vector<int> &a, const size_t start, const size_t end) {
+inline void QuickSortRecursiveHelperRand2(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithmRand2(a, start, end);
 
 	if (start + 1 < part) QuickSortRecursiveHelperRand2(a, start, part - 1);
 	if (part + 1 < end) QuickSortRecursiveHelperRand2(a, part + 1, end);
 }
 
-void QuickSortIterative(std::vector<int> &a) {
+inline void QuickSortIterative(std::vector<int> &a) {
 	if (a.size() <= 1) return;
 	stack<pair<size_t, size_t>> st;
 	st.push(make_pair(0, a.size() - 1));
@@ -142,7 +142,7 @@ void QuickSortIterative(std::vector<int> &a) {
 	}
 }
 
-void QuickSortIterativeRand(std::vector<int> &a) {
+inline void QuickSortIterativeRand(std::vector<int> &a) {
 	if (a.size() <= 1) return;
 	stack<pair<size_t, size_t>> st;
 	st.push(make_pair(0, a.size() - 1));
@@ -155,7 +155,7 @@ void QuickSortIterativeRand(std::vector<int> &a) {
 	}
 }
 
-void QuickSortIterative2(std::vector<int> &a) {
+inline void QuickSortIterative2(std::vector<int> &a) {
 	if (a.size() <= 1) return;
 	stack<pair<size_t, size_t>> st;
 	st.push(make_pair(0, a.size() - 1));
@@ -168,7 +168,7 @@ void QuickSortIterative2(std::vector<int> &a) {
 	}
 }
 
-void QuickSortIterativeRand2(std::vector<int> &a) {
+inline void QuickSortIterativeRand2(std::vector<int> &a) {
 	if (a.size() <= 1) return;
 	stack<pair<size_t, size_t>> st;
 	st.push(make_pair(0, a.size() - 1));
@@ -181,66 +181,82 @@ void QuickSortIterativeRand2(std::vector<int> &a) {
 	}
 }
 
-TestQuickSortClass1::TestQuickSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort 1";
-}
+class TestQuickSortClass1 : public TestClass {
+public:
+	TestQuickSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass {inarrays, "QuickSort 1"} { }
 
-void TestQuickSortClass1::SortAlgorithm(std::vector<int> &a) {
-	QuickSortIterative(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortIterative(a);
+	}
+};
 
-TestQuickSortClass2::TestQuickSortClass2(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort 2";
-}
+class TestQuickSortClass2 : public TestClass {
+public:
+	TestQuickSortClass2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort 2" } { }
 
-void TestQuickSortClass2::SortAlgorithm(std::vector<int> &a) {
-	QuickSortIterative2(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortIterative2(a);
+	}
+};
 
-TestQuickSortClassRand1::TestQuickSortClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Rand 1";
-}
+class TestQuickSortClassRand1 : public TestClass {
+public:
+	TestQuickSortClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort Rand 1" } { }
 
-void TestQuickSortClassRand1::SortAlgorithm(std::vector<int> &a) {
-	QuickSortIterativeRand(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortIterativeRand(a);
+	}
+};
 
-TestQuickSortClassRand2::TestQuickSortClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Rand 2";
-}
+class TestQuickSortClassRand2 : public TestClass {
+public:
+	TestQuickSortClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  "QuickSort Rand 2" } { }
 
-void TestQuickSortClassRand2::SortAlgorithm(std::vector<int> &a) {
-	QuickSortIterativeRand2(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortIterativeRand2(a);
+	}
+};
 
-TestQuickSortRecursiveClass1::TestQuickSortRecursiveClass1(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Recursive 1";
-}
+class TestQuickSortRecursiveClass1 : public TestClass {
+public:
+	TestQuickSortRecursiveClass1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort Recursive 1" } { }
 
-void TestQuickSortRecursiveClass1::SortAlgorithm(std::vector<int> &a) {
-	QuickSortRecursiveHelper1(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortRecursiveHelper1(a, 0, a.size() - 1);
+	}
+};
 
-TestQuickSortRecursiveClass2::TestQuickSortRecursiveClass2(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Recursive 2";
-}
+class TestQuickSortRecursiveClass2 : public TestClass {
+public:
+	TestQuickSortRecursiveClass2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort Recursive 2" } { }
 
-void TestQuickSortRecursiveClass2::SortAlgorithm(std::vector<int> &a) {
-	QuickSortRecursiveHelper2(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortRecursiveHelper2(a, 0, a.size() - 1);
+	}
+};
 
-TestQuickSortRecursiveClassRand1::TestQuickSortRecursiveClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Recursive Rand 1";
-}
+class TestQuickSortRecursiveClassRand1 : public TestClass {
+public:
+	TestQuickSortRecursiveClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort Recursive Rand 1" } { }
 
-void TestQuickSortRecursiveClassRand1::SortAlgorithm(std::vector<int> &a) {
-	QuickSortRecursiveHelperRand(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortRecursiveHelperRand(a, 0, a.size() - 1);
+	}
+};
 
-TestQuickSortRecursiveClassRand2::TestQuickSortRecursiveClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "QuickSort Recursive Rand 2";
-}
+class TestQuickSortRecursiveClassRand2 : public TestClass {
+public:
+	TestQuickSortRecursiveClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "QuickSort Recursive Rand 2" } { }
 
-void TestQuickSortRecursiveClassRand2::SortAlgorithm(std::vector<int> &a) {
-	QuickSortRecursiveHelperRand2(a, 0, a.size() - 1);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortRecursiveHelperRand2(a, 0, a.size() - 1);
+	}
+};

@@ -7,7 +7,7 @@ vector<int> buffer;
 
 // Merge from start to mid and mid + 1 to end
 
-void Merge(std::vector<int> &a, const size_t start, const size_t mid, const size_t end) {
+inline void Merge(std::vector<int> &a, const size_t start, const size_t mid, const size_t end) {
 	size_t n = end - start + 1; size_t n1 = mid - start + 1; size_t n2 = end - mid;
 	size_t i = 0; size_t i1 = 0; size_t i2 = 0;
 	
@@ -46,14 +46,14 @@ void Merge(std::vector<int> &a, const size_t start, const size_t mid, const size
 	return;
 }
 
-void MergeSortHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void MergeSortHelper(std::vector<int> &a, size_t start, size_t end) {
 	size_t mid = start + (end - start) / 2;
 	if (start < mid) MergeSortHelper(a, start, mid);
 	if (mid + 1 < end) MergeSortHelper(a, mid + 1, end);
 	Merge(a, start, mid, end);
 }
 
-void MergeSort(std::vector<int> &a) {
+inline void MergeSort(std::vector<int> &a) {
 	if (a.size() <= 1) return;
 	if (buffer.size() < a.size()) {
 		buffer.resize(a.size());
@@ -61,10 +61,12 @@ void MergeSort(std::vector<int> &a) {
 	MergeSortHelper(a, 0, a.size() - 1);
 }
 
-TestMergeSortClass::TestMergeSortClass(std::vector<std::vector<int>> &inarrays) : TestClass(inarrays) {
-	Name = "Merge Sort";
-}
+class TestMergeSortClass : public TestClass {
+public:
+	TestMergeSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Merge Sort" } { }
 
-void TestMergeSortClass::SortAlgorithm(std::vector<int> &a) {
-	MergeSort(a);
-}
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		MergeSort(a);
+	}
+};

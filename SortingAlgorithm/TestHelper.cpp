@@ -1,5 +1,13 @@
 #include "SortHelper.h"
 #include "SortTest.h"
+#include "BubbleSort.h"
+#include "QuickSort.h"
+#include "SelectionSort.h"
+#include "CustomQuickSort.h"
+#include "InsertionSort.h"
+#include "HeapSort.h"
+#include "LibrarySort.h"
+#include "MergeSort.h"
 #include <iostream>
 #include <sstream>
 #include <random>
@@ -27,8 +35,8 @@ std::vector<std::vector<int>> GenerateManyArray(int count, int size, int min_val
 	return arrays;
 }
 
-TestClass::TestClass(std::vector<std::vector<int>> &inarrays)
-	: arrays(inarrays), current(0), elapsed_time(0), InitialSortedAsc(0), InitialSortedDesc(0), SortedAfterExecutionAsc(-1), SortedAfterExecutionDesc(-1) {
+TestClass::TestClass(std::vector<std::vector<int>> &inarrays, std::string Name)
+	: arrays(inarrays), current(0), elapsed_time(0), InitialSortedAsc(0), InitialSortedDesc(0), SortedAfterExecutionAsc(-1), SortedAfterExecutionDesc(-1), Name(Name) {
 	for (auto &inarray : inarrays) {
 		auto srtpr = IsSorted(inarray);
 		if (srtpr.first) InitialSortedAsc++;
