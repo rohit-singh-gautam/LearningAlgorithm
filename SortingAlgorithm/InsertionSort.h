@@ -1,5 +1,7 @@
+#pragma once
+
 #include "SortHelper.h"
-#include "SortTest.h"
+#include "TestClassContainer.h"
 
 using namespace std;
 
@@ -65,8 +67,12 @@ inline void InsertionSort(int *first, int *last) {
 }
 
 class TestInsertionSortClass : public TestClass {
+	static constexpr const std::string_view name { "Insertion Sort" };
+
 public:
-	TestInsertionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Insertion Sort" } { }
+	TestInsertionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, Iterative } { }
+
+	const std::string_view &GetBaseName() const override { return name; }
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {
@@ -75,8 +81,12 @@ private:
 };
 
 class TestInsertionSortClass1 : public TestClass {
+	static constexpr const std::string_view name { "Insertion Sort Pointer" };
+
 public:
-	TestInsertionSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "Insertion Sort Pointer" } { }
+	TestInsertionSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, Iterative} { }
+
+	const std::string_view &GetBaseName() const override { return name; }
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {

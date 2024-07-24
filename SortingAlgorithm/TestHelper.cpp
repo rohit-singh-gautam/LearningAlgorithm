@@ -1,5 +1,5 @@
 #include "SortHelper.h"
-#include "SortTest.h"
+#include "TestClassContainer.h"
 #include "BubbleSort.h"
 #include "QuickSort.h"
 #include "SelectionSort.h"
@@ -14,71 +14,6 @@
 #include <algorithm>
 
 using namespace std;
-
-TestClass::TestClass(std::vector<std::vector<int>> &inarrays, std::string Name)
-	: arrays(inarrays), NumberOfArraySorted(0), elapsed_time(0), InitialSortedAsc(0), InitialSortedDesc(0), SortedAfterExecutionAsc(-1), SortedAfterExecutionDesc(-1), Name(Name) {
-	for (auto &inarray : inarrays) {
-		auto srtpr = IsSorted(inarray);
-		if (srtpr.first) InitialSortedAsc++;
-		if (srtpr.second) InitialSortedDesc++;
-	}
-}
-
-void TestClass::Sort(size_t NumberOfArrayToSort) {
-	if (NumberOfArraySorted + NumberOfArrayToSort > arrays.size()) return;
-	begin_time = std::chrono::high_resolution_clock::now();
-
-	for (size_t i = 0; i < NumberOfArrayToSort; i++) {
-		SortAlgorithm(arrays[NumberOfArraySorted + i]);
-	}
-
-	end_time = std::chrono::high_resolution_clock::now();
-
-	NumberOfArraySorted += NumberOfArrayToSort;
-	elapsed_time += end_time - begin_time;
-}
-
-void TestClass::FindSorted() {
-	SortedAfterExecutionAsc = 0;
-	SortedAfterExecutionDesc = 0;
-	for (auto &array : arrays) {
-		auto srtpr = IsSorted(array);
-		if (srtpr.first) SortedAfterExecutionAsc++;
-		if (srtpr.second) SortedAfterExecutionDesc++;
-	}
-}
-
-void DisplaySorted(string pre,  size_t count, size_t Asc, size_t Desc) {
-	cout << pre << " Sorted: " << count;
-	cout << "(";
-	if (Asc == 0 && Desc == 0) {
-		cout << "unsorted";
-	}
-	else if (Asc > 0 && Desc > 0) {
-		cout << "asc:" << Asc << ",desc:" << Desc;
-	}
-	else if (Asc > 0) {
-		cout << "asc";
-		if (Asc < count) cout << ":" << Asc;
-	}
-	else if (Desc > 0) {
-		cout << "desc:" << Desc;
-		if (Desc < count) cout << ":" << Desc;
-	}
-	cout << ")";
-}
-
-void TestClass::DisplayResult() const {
-	cout << Name << ": " << elapsed_time.count() << " s; ";
-	DisplaySorted("Initial", arrays.size(), InitialSortedAsc, InitialSortedDesc);
-	cout << "; ";
-	DisplaySorted("Final", arrays.size(), SortedAfterExecutionAsc, SortedAfterExecutionDesc);
-	cout << endl;
-}
-
-double TestClass::getElapsedTime() const {
-	return elapsed_time.count();
-}
 
 void SortTestAddAllQuick(vector<vector<int>> &manyarray, vector<TestClass *> &AllTest) {
 	vector<vector<int>> *manyarray1 = new vector<vector<int>>(manyarray);

@@ -1,5 +1,7 @@
+#pragma once
+
 #include "SortHelper.h"
-#include "SortTest.h"
+#include "TestClassContainer.h"
 
 using namespace std;
 
@@ -21,8 +23,11 @@ inline void SelectionSort(std::vector<int> &a) {
 }
 
 class TestSelectionSortClass : public TestClass {
+	static constexpr const std::string_view name { "Selection Sort" };
 public:
-	TestSelectionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  "Selection Sort" } { }
+	TestSelectionSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  N_Square, Iterative } { }
+
+	const std::string_view &GetBaseName() const override { return name; }
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {

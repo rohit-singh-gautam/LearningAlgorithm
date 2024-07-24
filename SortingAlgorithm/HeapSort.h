@@ -1,5 +1,7 @@
+#pragma once
+
 #include "SortHelper.h"
-#include "SortTest.h"
+#include "TestClassContainer.h"
 #include <algorithm>
 #include <iostream>
 #include <chrono>
@@ -81,7 +83,7 @@ inline void HeapSort(std::vector<int> &a, bool bDisplayHeap) {
 	size_t n = a.size();
 	CreateHeap(a);
 	if (bDisplayHeap) {
-		Display(a, "Heap array", false);
+		TestClass::Display<int>(a, "Heap array", false);
 		DisplayHeap(a);
 	}
 	for (size_t i = n - 1; i > 0; i--) {
@@ -109,8 +111,12 @@ inline void TestHeapSort(std::vector<vector<int>> manyarray) {
 }
 
 class TestHeapSortClass : public TestClass {
+	static constexpr const std::string_view name { "HeapSort" };
+
 public:
-	TestHeapSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, "HeapSort" } { }
+	TestHeapSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Iterative } { }
+
+	const std::string_view &GetBaseName() const override { return name; }
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {

@@ -1,5 +1,5 @@
 #include "SortHelper.h"
-#include "SortTest.h"
+#include "TestClassContainer.h"
 #include <iostream>
 
 int main()

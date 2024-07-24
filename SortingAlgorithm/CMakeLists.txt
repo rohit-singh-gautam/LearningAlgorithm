@@ -8,4 +8,4 @@ add_executable(SortingAlgorithm
     TestHelper.cpp
 )
 
-set_property(TARGET SortingAlgorithm PROPERTY CXX_STANDARD 20)
+set_property(TARGET SortingAlgorithm PROPERTY CXX_STANDARD 23)
