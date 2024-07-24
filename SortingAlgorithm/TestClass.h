@@ -230,9 +230,9 @@ public:
 	}
 
 	template <typename IntType = int>
-	static std::vector<std::vector<IntType>> GenerateManyArray(int count, int size, IntType min_val, IntType max_val = std::numeric_limits<IntType>::max()) {
+	static std::vector<std::vector<IntType>> GenerateManyArray(size_t count, size_t size, IntType min_val, IntType max_val = std::numeric_limits<IntType>::max()) {
 		std::vector<std::vector<IntType>> arrays(count, std::vector<IntType>(size));
-		for (size_t i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; ++i) {
 			for (size_t j = 0; j < size; j++) {
 				IntType rnd = (rand() % (max_val - min_val + 1)) + min_val;
 				arrays[i][j] = rnd;
@@ -245,7 +245,7 @@ public:
 	static void Display(std::vector<StorageType> &a, const char *str, bool bDispSorted) {
 		bool bDispColon;
 		bool bDispBracket;
-		if (str != nullptr && str != "\0") {
+		if (str != nullptr && *str != '\0') {
 			std::cout << str;
 			bDispColon = true;
 			bDispBracket = true;
@@ -288,6 +288,18 @@ public:
 		
 		std::cout << std::endl;
 	}
+};
+
+template <typename T>
+class testless {
+public:
+	static bool compare(const T& lhs, const T& rhs) { return lhs < rhs; }
+};
+
+template <typename T>
+class testgreater {
+public:
+	static bool compare(const T& lhs, const T& rhs) { return lhs > rhs; }
 };
 
 

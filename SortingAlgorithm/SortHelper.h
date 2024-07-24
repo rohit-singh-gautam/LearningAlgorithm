@@ -3,13 +3,6 @@
 #include <string>
 #include <iostream>
 
-std::pair<bool, bool> IsSorted(std::vector<int> &a);
-void HeapSort(std::vector<int> &a, bool bDisplayHeap = false);
-void CreateHeap(std::vector<int> &a);
-void Heapify(std::vector<int> &a, const size_t root, const size_t last);
-void InsertionSort(std::vector<int> &a, int start, int end);
-void InsertionSort(int *first, int *last);
-
 std::string ToString(const int val);
 
 enum DisplayAlignment {

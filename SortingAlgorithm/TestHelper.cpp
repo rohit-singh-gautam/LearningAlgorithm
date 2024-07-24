@@ -1,13 +1,5 @@
 #include "SortHelper.h"
 #include "TestClassContainer.h"
-#include "BubbleSort.h"
-#include "QuickSort.h"
-#include "SelectionSort.h"
-#include "CustomQuickSort.h"
-#include "InsertionSort.h"
-#include "HeapSort.h"
-#include "LibrarySort.h"
-#include "MergeSort.h"
 #include <iostream>
 #include <sstream>
 #include <random>
@@ -58,6 +50,9 @@ void SortTestAddAllQuickIterRecur(vector<vector<int>> &manyarray, vector<TestCla
 void SortTestAddQuick(vector<vector<int>> &manyarray, vector<TestClass *> &AllTest) {
 	vector<vector<int>> *manyarray1 = new vector<vector<int>>(manyarray);
 	AllTest.push_back(new TestQuickSortRecursiveClass1(*manyarray1));
+
+	vector<vector<int>> *manyarray2 = new vector<vector<int>>(manyarray);
+	AllTest.push_back(new TestQuickSortTailRecursiveLeftOptimizedClass(*manyarray2));
 }
 
 void SortTestAddCustomQuick(vector<vector<int>> &manyarray, vector<TestClass *> &AllTest) {

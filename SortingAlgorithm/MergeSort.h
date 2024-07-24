@@ -42,7 +42,7 @@ class TestMergeSortClass : public TestClass {
 			i++;
 		}
 
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; ++i) {
 			a[start + i] = buffer[i];
 		}
 

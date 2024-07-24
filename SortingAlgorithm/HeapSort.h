@@ -37,13 +37,13 @@ inline void DisplayHeap(std::vector<int> &a) {
 	size_t width = findMaxWidth(a) + 2;
 	size_t leafsize = LeafSize(n);
 	size_t currwidth = width * leafsize;
-	int currcount = 1;
-	int i = 0;
+	size_t currcount = 1;
+	size_t i = 0;
 
 	DisplayString(string("Heap Tree"), currwidth);
 	cout << endl;
 	while (i < n) {
-		for (int j = 0; j < currcount && i < n; j++, i++) {
+		for (size_t j = 0; j < currcount && i < n; ++j, ++i) {
 			DisplayString(a[i], currwidth);
 		}
 		cout << endl;
@@ -52,18 +52,17 @@ inline void DisplayHeap(std::vector<int> &a) {
 	}
 }
 
-
-
-inline void Heapify(std::vector<int> &a, const size_t root, const size_t last) {
+template <typename StoreType, typename Compare>
+inline void Heapify(std::vector<StoreType> &a, const size_t root, const size_t last) {
 	size_t parent = root;
-	int val = a[root];
+	auto val = a[root];
 	size_t leftchild = parent * 2 + 1;
 
 	while (leftchild <= last) {
 		const size_t rightchild = leftchild + 1;
 		const size_t selected = leftchild == last || a[leftchild] > a[rightchild] ?
 			leftchild : rightchild;
-		if (val >= a[selected]) break;
+		if (!Compare::compare(val, a[selected])) break;
 		a[parent] = a[selected];
 		parent = selected;
 		leftchild = parent * 2 + 1;
@@ -72,24 +71,40 @@ inline void Heapify(std::vector<int> &a, const size_t root, const size_t last) {
 	a[parent] = val;
 }
 
-inline void CreateHeap(std::vector<int> &a) {
+template <typename StoreType, typename Compare>
+inline void CreateHeap(std::vector<StoreType> &a) {
 	size_t last = a.size() - 1;
 	for (size_t i = (last / 2) + 1; i > 0; i--) {
-		Heapify(a, i - 1, last);
+		Heapify<StoreType, Compare>(a, i - 1, last);
 	}
 }
 
-inline void HeapSort(std::vector<int> &a, bool bDisplayHeap) {
+inline void HeapSort(std::vector<int> &a, bool bDisplayHeap = false) {
 	size_t n = a.size();
-	CreateHeap(a);
+	CreateHeap<int,  testless<int>>(a);
 	if (bDisplayHeap) {
 		TestClass::Display<int>(a, "Heap array", false);
 		DisplayHeap(a);
 	}
 	for (size_t i = n - 1; i > 0; i--) {
 		swap(a[0], a[i]);
-		Heapify(a, 0, i - 1);
+		Heapify<int, testless<int>>(a, 0, i - 1);
 	}
+}
+
+inline void TestHeapSort() {
+	std::vector<int> a{ 3, 4, 6, 9, 20, 88, 34, 5, 56, 32, 33, 83, 74, 17, 27, 7, 1, 2, 93, 31, 16, 43, 63, 68 };
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	TestClass::Display<int>(a, "Original", false);
+	HeapSort(a, true);
+	TestClass::Display<int>(a, "After HeapSort", true);
+
+	auto finish = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = finish - start;
+
+	std::cout << "HeapSort Elapsed time: " << elapsed.count() << " s\n";
 }
 
 inline void TestHeapSort(std::vector<vector<int>> manyarray) {

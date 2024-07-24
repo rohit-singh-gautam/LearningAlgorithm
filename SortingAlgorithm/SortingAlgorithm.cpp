@@ -22,4 +22,6 @@ int main()
 #endif
 
 	SortAllTest(count, arraycount, arraysize);
+
+	return 0;
 }

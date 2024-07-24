@@ -2,6 +2,8 @@
 
 #include "SortHelper.h"
 #include "TestClassContainer.h"
+#include "InsertionSort.h"
+#include "HeapSort.h"
 #include <chrono>
 #include <iostream>
 
@@ -47,7 +49,7 @@ inline size_t CustomPartitionAlgorithm(std::vector<int> &a, size_t start, size_t
 inline size_t CustomPartitionAlgorithmInsertion(std::vector<int> &a, size_t start, size_t end) {
 	int pivot;
 
-	if (end < start + 32) {
+	if (start + 128 > end) {
 		int *first = &a[start];
 		int *last = &a[end]; last++;
 		InsertionSort(first, last);
@@ -166,14 +168,14 @@ inline void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, siz
 }
 
 inline void CustomQuickSortRecursiveTailInsertionHeapHelper(std::vector<int> &a, size_t start, size_t end) {
-	CreateHeap(a);
+	CreateHeap<int,testgreater<int>>(a);
 	CustomQuickSortRecursiveTailInsertionHelper(a, start, end);
 }
 
 class TestCustomQuickSortClass : public TestClass {
 	static constexpr const std::string_view name { "Custom QuickSort" };
 public:
-	TestCustomQuickSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Recursive, OptimizedCustom } { }
+	TestCustomQuickSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Recursive, OptimizedCustom, OptimizeLeft } { }
 
 	const std::string_view &GetBaseName() const override { return name; }
 
@@ -186,7 +188,7 @@ private:
 class TestCustomQuickSortTailClass : public TestClass {
 	static constexpr const std::string_view name { "Custom QuickSort" };
 public:
-	TestCustomQuickSortTailClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive, OptimizedCustom } { }
+	TestCustomQuickSortTailClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive, OptimizedCustom, OptimizeLeft } { }
 
 	const std::string_view &GetBaseName() const override { return name; }
 
@@ -199,7 +201,7 @@ private:
 class TestCustomQuickSortTailInsertionClass : public TestClass {
 	static constexpr const std::string_view name { "Custom QuickSort" };
 public:
-	TestCustomQuickSortTailInsertionClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, OptimizedCustom } { }
+	TestCustomQuickSortTailInsertionClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, OptimizedCustom, OptimizeLeft } { }
 
 	const std::string_view &GetBaseName() const override { return name; }
 
@@ -213,7 +215,7 @@ class TestCustomQuickSortTailInsertionHeapClass : public TestClass {
 	static constexpr const std::string_view name { "Custom QuickSort" };
 
 public:
-	TestCustomQuickSortTailInsertionHeapClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, HeapEnabled, OptimizedCustom } { }
+	TestCustomQuickSortTailInsertionHeapClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, HeapEnabled, OptimizedCustom, OptimizeLeft } { }
 
 	const std::string_view &GetBaseName() const override { return name; }
 

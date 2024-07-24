@@ -77,7 +77,7 @@ inline size_t PartitionAlgorithmRandLeftOptimized(std::vector<int> &a, const siz
 	return i;
 }
 
-inline void QuickSortRecursiveHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void QuickSortTailRecursiveHelper(std::vector<int> &a, size_t start, size_t end) {
 
 	while (true) {
 		auto part = PartitionAlgorithm(a, start, end);
@@ -95,11 +95,44 @@ inline void QuickSortRecursiveHelper(std::vector<int> &a, size_t start, size_t e
 
 		case 3:
 			if (part - start < end - part) {
-				QuickSortRecursiveHelper(a, start, part - 1);
+				QuickSortTailRecursiveHelper(a, start, part - 1);
 				start = part + 1;
 			}
 			else {
-				QuickSortRecursiveHelper(a, part + 1, end);
+				QuickSortTailRecursiveHelper(a, part + 1, end);
+				end = part - 1;
+			}
+			break;
+
+		default:
+			return;
+		}
+	}
+}
+
+inline void QuickSortTailRecursiveLeftOptimizedHelper(std::vector<int> &a, size_t start, size_t end) {
+
+	while (true) {
+		auto part = PartitionAlgorithmLeftOptimized(a, start, end);
+		auto choice = (start + 1 < part) + ((part + 1 < end) << 1);
+
+		switch (choice)
+		{
+		case 1:
+			end = part - 1;
+			break;
+
+		case 2:
+			start = part + 1;
+			break;
+
+		case 3:
+			if (part - start < end - part) {
+				QuickSortTailRecursiveLeftOptimizedHelper(a, start, part - 1);
+				start = part + 1;
+			}
+			else {
+				QuickSortTailRecursiveLeftOptimizedHelper(a, part + 1, end);
 				end = part - 1;
 			}
 			break;
@@ -249,7 +282,22 @@ public:
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortRecursiveHelper(a, 0, a.size() - 1);
+		QuickSortTailRecursiveHelper(a, 0, a.size() - 1);
+	}
+};
+
+
+class TestQuickSortTailRecursiveLeftOptimizedClass : public TestClass {
+	static constexpr const std::string_view name { "QuickSort" };
+
+public:
+	TestQuickSortTailRecursiveLeftOptimizedClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive, OptimizeLeft } { }
+
+	const std::string_view &GetBaseName() const override { return name; }
+
+private:
+	void SortAlgorithm(std::vector<int> &a) override {
+		QuickSortTailRecursiveLeftOptimizedHelper(a, 0, a.size() - 1);
 	}
 };
 

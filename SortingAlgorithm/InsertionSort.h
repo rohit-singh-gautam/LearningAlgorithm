@@ -5,16 +5,17 @@
 
 using namespace std;
 
-inline void InsertionSort(std::vector<int> &a, int start, int end) {
+inline void InsertionSort(std::vector<int> &a, size_t start, size_t end) {
 	auto first = a[start];
-	for (std::size_t i = 1; i <= end; i++) {
+	for (std::size_t i = 1; i <= end; ++i) {
 		auto j = i;
 		auto pivot = a[j];
 		if (pivot < first) {
-			while (--j >= start) {
+			while (j > start) {
+				--j;
 				a[j + 1] = a[j];
 			}
-			first = a[start] = a[j];
+			first = a[start] = pivot;
 		}
 		else {
 			while (pivot < a[j - 1]) {

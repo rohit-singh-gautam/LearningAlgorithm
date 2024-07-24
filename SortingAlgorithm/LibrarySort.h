@@ -7,7 +7,7 @@
 #include <iostream>
 
 class TestLibrarySortClass : public TestClass {
-	static constexpr const std::string_view name { "HeapSort" };
+	static constexpr const std::string_view name { "LibrarySort" };
 public:
 	TestLibrarySortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, NONE } { }
 
