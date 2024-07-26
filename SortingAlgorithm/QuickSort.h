@@ -1,10 +1,12 @@
 #pragma once
 
-#include "SortHelper.h"
-#include "TestClassContainer.h"
+#include "TestClass.h"
+#include "QuickSort.h"
 #include <stack>
 #include <chrono>
 #include <iostream>
+#include <unordered_map>
+#include <ranges>
 
 using namespace std;
 
@@ -110,6 +112,8 @@ inline void QuickSortTailRecursiveHelper(std::vector<int> &a, size_t start, size
 	}
 }
 
+inline void QuickSortTailRecursiveHelper(std::vector<int> &a) { QuickSortTailRecursiveHelper(a, 0, a.size() - 1);}
+
 inline void QuickSortTailRecursiveLeftOptimizedHelper(std::vector<int> &a, size_t start, size_t end) {
 
 	while (true) {
@@ -143,12 +147,16 @@ inline void QuickSortTailRecursiveLeftOptimizedHelper(std::vector<int> &a, size_
 	}
 }
 
+inline void QuickSortTailRecursiveLeftOptimizedHelper(std::vector<int> &a) { QuickSortTailRecursiveLeftOptimizedHelper(a, 0, a.size() - 1); }
+
 inline void QuickSortRecursiveHelperLeftOptimized(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithmLeftOptimized(a, start, end);
 
 	if (start + 1 < part) QuickSortRecursiveHelperLeftOptimized(a, start, part - 1);
 	if (part + 1 < end) QuickSortRecursiveHelperLeftOptimized(a, part + 1, end);
 }
+
+inline void QuickSortRecursiveHelperLeftOptimized(std::vector<int> &a) { QuickSortRecursiveHelperLeftOptimized(a, 0, a.size() - 1); }
 
 inline void QuickSortRecursiveHelperRand(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithmRand(a, start, end);
@@ -157,12 +165,16 @@ inline void QuickSortRecursiveHelperRand(std::vector<int> &a, const size_t start
 	if (part + 1 < end) QuickSortRecursiveHelperRand(a, part + 1, end);
 }
 
+inline void QuickSortRecursiveHelperRand(std::vector<int> &a) { QuickSortRecursiveHelperRand(a, 0, a.size() - 1);}
+
 inline void QuickSortRecursiveHelperRandLeftOptimized(std::vector<int> &a, const size_t start, const size_t end) {
 	auto part = PartitionAlgorithmRandLeftOptimized(a, start, end);
 
 	if (start + 1 < part) QuickSortRecursiveHelperRandLeftOptimized(a, start, part - 1);
 	if (part + 1 < end) QuickSortRecursiveHelperRandLeftOptimized(a, part + 1, end);
 }
+
+inline void QuickSortRecursiveHelperRandLeftOptimized(std::vector<int> &a) {QuickSortRecursiveHelperRandLeftOptimized(a, 0, a.size() - 1);}
 
 inline void QuickSortIterative(std::vector<int> &a) {
 	if (a.size() <= 1) return;
@@ -216,129 +228,27 @@ inline void QuickSortIterativeRandLeftOptimized(std::vector<int> &a) {
 	}
 }
 
-class TestQuickSortClass1 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
+class QuickSortTester : public TestClass {
 public:
-	TestQuickSortClass1(std::vector<std::vector<int>> &inarrays) : TestClass {inarrays, N_LogN, Iterative} { }
+	static constexpr const std::string_view name { "Quick Sort" };
+
+	using TestClass::TestClass;
 
 	const std::string_view &GetBaseName() const override { return name; }
 
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortIterative(a);
-	}
-};
-
-class TestQuickSortClass2 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortClass2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Iterative, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
+	static const std::vector<size_t> AllSortProperties;
+	static auto &GetAllSortProperties() { return AllSortProperties; }
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortIterativeLeftOptimized(a);
+		auto sortmaps = GetSortMapping();
+		auto sortfunctionitr = sortmaps.find(GetProperty());
+		if (sortfunctionitr == std::end(sortmaps)) {
+			throw std::invalid_argument("Unsupported sorting alogrithm");
+		}
+		auto sortfunction = *sortfunctionitr->second;
+		sortfunction(a);
 	}
-};
-
-class TestQuickSortClassRand1 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  N_LogN, Iterative, Randomize } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortIterativeRand(a);
-	}
-};
-
-class TestQuickSortClassRand2 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  N_LogN, Iterative, Randomize, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortIterativeRandLeftOptimized(a);
-	}
-};
-
-class TestQuickSortRecursiveClass1 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortRecursiveClass1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortTailRecursiveHelper(a, 0, a.size() - 1);
-	}
-};
-
-
-class TestQuickSortTailRecursiveLeftOptimizedClass : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortTailRecursiveLeftOptimizedClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortTailRecursiveLeftOptimizedHelper(a, 0, a.size() - 1);
-	}
-};
-
-class TestQuickSortRecursiveClass2 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortRecursiveClass2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Recursive, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortRecursiveHelperLeftOptimized(a, 0, a.size() - 1);
-	}
-};
-
-class TestQuickSortRecursiveClassRand1 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortRecursiveClassRand1(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays,  N_LogN, Recursive, Randomize } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortRecursiveHelperRand(a, 0, a.size() - 1);
-	}
-};
-
-class TestQuickSortRecursiveClassRand2 : public TestClass {
-	static constexpr const std::string_view name { "QuickSort" };
-
-public:
-	TestQuickSortRecursiveClassRand2(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Recursive, Randomize, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		QuickSortRecursiveHelperRandLeftOptimized(a, 0, a.size() - 1);
-	}
+	static const std::unordered_map<size_t, SortingFunction> sortmaps;
+	const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const override { return sortmaps; }
 };

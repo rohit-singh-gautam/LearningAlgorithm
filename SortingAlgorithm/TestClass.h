@@ -6,6 +6,15 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <unordered_map>
+#include <ranges>
+
+
+enum class SortOrder {
+	Ascending,
+	Descending,
+	Random
+};
 
 class TestProperties {
 	const size_t properties;
@@ -54,6 +63,10 @@ class TestProperties {
 			property_string += "Randomize ";
 		}
 
+		if(properties & Pointer) {
+			property_string += "Pointer ";
+		}
+
 		property_string += "}";
 		return property_string;
 	}
@@ -70,14 +83,16 @@ public:
 		OptimizedCustom = 0x40,
 		OptimizeLeft = 0x80,
 		Optimized = 0x100,
-		Randomize = 0x200
+		Randomize = 0x200,
+		Pointer = 0x400,
 	};
 
-	template <std::unsigned_integral... Types>
+	template <class... Types>
 	TestProperties(Types... args) : properties { (args | ...) }, propertystring { CreatePropertiesString(properties) } { }
 	TestProperties(size_t properties) : properties { properties }, propertystring { CreatePropertiesString(properties) } { }
 
 	const auto &GetProperyString() const { return propertystring; }
+	auto GetProperty() const { return properties; }
 
 	auto IsNSquare() const { return (properties & N_Square) != 0; }
 	auto IsNLogN() const { return (properties & N_LogN) != 0; }
@@ -89,10 +104,25 @@ public:
 	auto IsOptimizedLeft() const { return (properties & OptimizeLeft) != 0; }
 	auto IsOptimized() const { return (properties & Optimized) != 0; }
 	auto IsRandomize() const { return (properties & Randomize) != 0; }
+	auto IsPointer() const { return (properties & Pointer) != 0; }
+
+	template <class... Types>
+	auto IsPropertySet(Types... args) {
+		auto PropertyToCheck { (args | ...) };
+		return PropertyToCheck == properties;
+	}
+
+	template <class... Types>
+	static constexpr auto GetPropertyString(Types... args) {
+		size_t properties { (args | ...) };
+		return properties;
+	}
+
+	operator size_t() const { return properties; }
 };
 
 
-class TestClassBase : public TestProperties{
+class TestClassBase : public TestProperties {
 protected:
 	size_t NumberOfArraySorted  { 0 };
 	decltype(std::chrono::high_resolution_clock::now()) begin_time;
@@ -139,6 +169,12 @@ public:
 		return std::make_pair(ArrayIsSortedAsc, ArrayIsSortedDesc);
 	}
 
+	virtual void FindSorted() = 0;
+	virtual void DisplayResult() const = 0;
+	auto getElapsedTime() const {
+		return elapsed_time;
+	}
+
 	const auto GetName() const {
 		return std::string { GetBaseName() } + " " + GetProperyString();
 	}
@@ -164,13 +200,23 @@ public:
 	}
 };
 
+typedef void (*SortingFunction)(std::vector<int> &a);
+
 class TestClass : public TestClassBase {
 private:
 	std::vector<std::vector<int>> &arrays;
 
 protected:
 	std::string Name;
-	virtual void SortAlgorithm(std::vector<int> &a) = 0;
+	virtual void SortAlgorithm(std::vector<int> &a) {
+		auto sortmaps = GetSortMapping();
+		auto sortfunctionitr = sortmaps.find(GetProperty());
+		if (sortfunctionitr == std::end(sortmaps)) {
+			throw std::invalid_argument("Unsupported sorting alogrithm");
+		}
+		auto sortfunction = *sortfunctionitr->second;
+		sortfunction(a);
+	}
 
 	void InitiateSort(size_t ArrayIndex) override {
 		SortAlgorithm(arrays[ArrayIndex]);
@@ -196,7 +242,12 @@ public:
 
 	size_t GettArrayListSize() const override { return arrays.size(); }
 
-	void FindSorted() {
+private:
+	virtual const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const = 0;
+
+public:
+
+	void FindSorted() override {
 		SortedAfterExecutionAsc = 0;
 		SortedAfterExecutionDesc = 0;
 		for (auto &array : arrays) {
@@ -206,7 +257,7 @@ public:
 		}
 	}
 
-	void DisplayResult() const {
+	void DisplayResult() const override {
 		std::cout << GetName() << ": " << elapsed_time.count() << " s; ";
 		DisplaySorted("Initial", arrays.size(), InitialSortedAsc, InitialSortedDesc);
 		std::cout << "; ";
@@ -214,13 +265,8 @@ public:
 		std::cout << std::endl;
 	}
 
-	double getElapsedTime() const {
-		return elapsed_time.count();
-	}
-
-
 	template <typename IntType = int>
-	static std::vector<IntType> GenerateRandomArray(size_t size, IntType min_val, IntType max_val = std::numeric_limits<IntType>::max()) {
+	static std::vector<IntType> GenerateRandomArray(size_t size, IntType min_val = 0, IntType max_val = std::numeric_limits<IntType>::max()) {
 		std::vector<IntType> ret(size);
 		for (size_t i = 0; i < size; i++) {
 			IntType rnd = (rand() % (max_val - min_val + 1)) + min_val;
@@ -230,7 +276,7 @@ public:
 	}
 
 	template <typename IntType = int>
-	static std::vector<std::vector<IntType>> GenerateManyArray(size_t count, size_t size, IntType min_val, IntType max_val = std::numeric_limits<IntType>::max()) {
+	static std::vector<std::vector<IntType>> GenerateManyArray(size_t count, size_t size, IntType min_val = 0, IntType max_val = std::numeric_limits<IntType>::max()) {
 		std::vector<std::vector<IntType>> arrays(count, std::vector<IntType>(size));
 		for (size_t i = 0; i < count; ++i) {
 			for (size_t j = 0; j < size; j++) {
@@ -290,6 +336,8 @@ public:
 	}
 };
 
+// We do not want to use std::less as it has to pass function
+// With below class no function has to be passed
 template <typename T>
 class testless {
 public:
@@ -301,6 +349,5 @@ class testgreater {
 public:
 	static bool compare(const T& lhs, const T& rhs) { return lhs > rhs; }
 };
-
 
 void SortAllTest(const int count, const int arraycount, const int arraysize);

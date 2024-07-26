@@ -1,11 +1,13 @@
 #pragma once
 
-#include "SortHelper.h"
-#include "TestClassContainer.h"
+#include "TestClass.h"
 
-class TestMergeSortClass : public TestClass {
+class MergeSortTester : public TestClass {
+public:
 	static constexpr const std::string_view name { "Merge Sort" };
+	const std::string_view &GetBaseName() const override { return name; }
 
+private:
 	std::vector<int> buffer { };
 
 	// Merge from start to mid and mid + 1 to end
@@ -57,15 +59,16 @@ class TestMergeSortClass : public TestClass {
 	}
 
 public:
-	TestMergeSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN,  Recursive } { }
+	using TestClass::TestClass;
 
-	const std::string_view &GetBaseName() const override { return name; }
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		if (a.size() <= 1) return;
-		if (buffer.size() < a.size()) {
-			buffer.resize(a.size());
-		}
-		MergeSortHelper(a, 0, a.size() - 1);
+	static const std::vector<size_t> AllSortProperties;
+	static auto &GetAllSortProperties() { return AllSortProperties; }
+
+	static void MergeSortAlgorithm(std::vector<int> &a) {
+		std::sort(a.begin(), a.end());
 	}
+
+private:
+	static const std::unordered_map<size_t, SortingFunction> sortmaps;
+	const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const override { return sortmaps; }
 };

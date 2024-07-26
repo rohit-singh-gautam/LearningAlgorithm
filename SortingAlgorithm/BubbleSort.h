@@ -1,18 +1,14 @@
 #pragma once
 
-#include "SortHelper.h"
-#include "TestClassContainer.h"
-
-class TestBubbleSortClass : public TestClass {
-	static constexpr const std::string_view name { "Bubble Sort" };
+#include "TestClass.h"
+class BubbleSortTester : public TestClass {
 public:
-	TestBubbleSortClass(std::vector<std::vector<int>> &inarrays) :
-		TestClass { inarrays, TestClass::N_Square } { }
+	static constexpr const std::string_view name { "Bubble Sort" };
+	using TestClass::TestClass;
 
 	const std::string_view &GetBaseName() const override { return name; }
 
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
+	static void BubbleSortAlgorithm(std::vector<int> &a) {
 		auto n = a.size();
 		bool bSorted = false;
 		for (auto i = n - 1; i >= 1 && !bSorted; --i) {
@@ -25,4 +21,12 @@ private:
 			}
 		}
 	}
+
+	static const std::vector<size_t> AllSortProperties;
+	static auto &GetAllSortProperties() { return AllSortProperties; }
+
+private:
+	static const std::unordered_map<size_t, SortingFunction> sortmaps;
+	const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const override { return sortmaps; }
 };
+

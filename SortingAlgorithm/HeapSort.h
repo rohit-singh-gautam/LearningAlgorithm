@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SortHelper.h"
-#include "TestClassContainer.h"
+#include "TestClass.h"
 #include <algorithm>
 #include <iostream>
 #include <chrono>
@@ -125,16 +124,21 @@ inline void TestHeapSort(std::vector<vector<int>> manyarray) {
 	std::cout << "HeapSort Elapsed time: " << elapsed.count() << " s\n";
 }
 
-class TestHeapSortClass : public TestClass {
-	static constexpr const std::string_view name { "HeapSort" };
-
+class HeapSortTester : public TestClass {
 public:
-	TestHeapSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Iterative } { }
+	static constexpr const std::string_view name { "HeapSort" };
+	using TestClass::TestClass;
 
 	const std::string_view &GetBaseName() const override { return name; }
 
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
+	static void HeapSortAlgorithm(std::vector<int> &a) {
 		HeapSort(a);
 	}
+
+	static const std::vector<size_t> AllSortProperties;
+	static auto &GetAllSortProperties() { return AllSortProperties; }
+
+private:
+	static const std::unordered_map<size_t, SortingFunction> sortmaps;
+	const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const override { return sortmaps; }
 };

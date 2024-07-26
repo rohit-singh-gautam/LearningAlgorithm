@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SortHelper.h"
-#include "TestClassContainer.h"
 #include "InsertionSort.h"
 #include "HeapSort.h"
 #include <chrono>
@@ -99,6 +98,8 @@ inline void CustomQuickSortRecursiveHelper(std::vector<int> &a, const size_t sta
 	if (part + 1 < end) CustomQuickSortRecursiveHelper(a, part + 1, end);
 }
 
+inline void CustomQuickSortRecursiveHelper(std::vector<int> &a) { CustomQuickSortRecursiveHelper(a, 0, a.size() - 1); }
+
 inline void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start, size_t end) {
 	while (true) {
 		auto part = CustomPartitionAlgorithm(a, start, end);
@@ -118,11 +119,11 @@ inline void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start
 
 		case 3:
 			if (part - start < end - part) {
-				CustomQuickSortRecursiveHelper(a, start, part - 1);
+				CustomQuickSortRecursiveTailHelper(a, start, part - 1);
 				start = part + 1;
 			}
 			else {
-				CustomQuickSortRecursiveHelper(a, part + 1, end);
+				CustomQuickSortRecursiveTailHelper(a, part + 1, end);
 				end = part - 1;
 			}
 			break;
@@ -132,6 +133,8 @@ inline void CustomQuickSortRecursiveTailHelper(std::vector<int> &a, size_t start
 		}
 	}
 }
+
+inline void CustomQuickSortRecursiveTailHelper(std::vector<int> &a) { CustomQuickSortRecursiveTailHelper(a, 0, a.size() - 1); }
 
 inline void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, size_t start, size_t end) {
 	while (true) {
@@ -167,60 +170,9 @@ inline void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a, siz
 	}
 }
 
-inline void CustomQuickSortRecursiveTailInsertionHeapHelper(std::vector<int> &a, size_t start, size_t end) {
+inline void CustomQuickSortRecursiveTailInsertionHelper(std::vector<int> &a) { CustomQuickSortRecursiveTailInsertionHelper(a, 0, a.size() - 1); }
+
+inline void CustomQuickSortRecursiveTailInsertionHeapHelper(std::vector<int> &a) {
 	CreateHeap<int,testgreater<int>>(a);
-	CustomQuickSortRecursiveTailInsertionHelper(a, start, end);
+	CustomQuickSortRecursiveTailInsertionHelper(a, 0, a.size() - 1);
 }
-
-class TestCustomQuickSortClass : public TestClass {
-	static constexpr const std::string_view name { "Custom QuickSort" };
-public:
-	TestCustomQuickSortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, Recursive, OptimizedCustom, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
-	}
-};
-
-class TestCustomQuickSortTailClass : public TestClass {
-	static constexpr const std::string_view name { "Custom QuickSort" };
-public:
-	TestCustomQuickSortTailClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_LogN, TailRecursive, OptimizedCustom, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		CustomQuickSortRecursiveHelper(a, 0, a.size() - 1);
-	}
-};
-
-class TestCustomQuickSortTailInsertionClass : public TestClass {
-	static constexpr const std::string_view name { "Custom QuickSort" };
-public:
-	TestCustomQuickSortTailInsertionClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, OptimizedCustom, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		CustomQuickSortRecursiveTailInsertionHelper(a, 0, a.size() - 1);
-	}
-};
-
-class TestCustomQuickSortTailInsertionHeapClass : public TestClass {
-	static constexpr const std::string_view name { "Custom QuickSort" };
-
-public:
-	TestCustomQuickSortTailInsertionHeapClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, N_Square, N_LogN, TailRecursive, HeapEnabled, OptimizedCustom, OptimizeLeft } { }
-
-	const std::string_view &GetBaseName() const override { return name; }
-
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
-		CustomQuickSortRecursiveTailInsertionHeapHelper(a, 0, a.size() - 1);
-	}
-};

@@ -1,20 +1,27 @@
 #pragma once
 
 #include "SortHelper.h"
-#include "TestClassContainer.h"
 #include <chrono>
 #include <algorithm>
 #include <iostream>
 
-class TestLibrarySortClass : public TestClass {
-	static constexpr const std::string_view name { "LibrarySort" };
+class LibrarySortTester : public TestClass {
 public:
-	TestLibrarySortClass(std::vector<std::vector<int>> &inarrays) : TestClass { inarrays, NONE } { }
+	static constexpr const std::string_view name { "Library Sort" };
+
+	using TestClass::TestClass;
 
 	const std::string_view &GetBaseName() const override { return name; }
 
-private:
-	void SortAlgorithm(std::vector<int> &a) override {
+	static const std::vector<size_t> AllSortProperties;
+	static auto &GetAllSortProperties() { return AllSortProperties; }
+
+	static void LibrarySortAlgorithm(std::vector<int> &a) {
 		std::sort(a.begin(), a.end());
 	}
+
+private:
+
+	static const std::unordered_map<size_t, SortingFunction> sortmaps;
+	const std::unordered_map<size_t, SortingFunction> &GetSortMapping() const override { return sortmaps; }
 };
