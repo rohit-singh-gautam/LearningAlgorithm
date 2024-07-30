@@ -6,6 +6,14 @@
 class OperatorNode;
 class OperandNode;
 
+struct TypeID {
+	int typeId;
+	template <size_t size>
+	constexpr TypeID(const char (&typeIdCh)[size]) : typeId { (size >= 1 ? typeIdCh[0] : 0) + (size >= 2 ? typeIdCh[1] << 8 : 0) + (size >= 3 ? typeIdCh[2] << 16: 0) + (size >= 4 ? typeIdCh[3] << 24 : 0)} { }
+
+	constexpr operator int() const { return typeId; }
+};
+
 class BaseExpression {
 protected:
 	std::string OriginalString;
@@ -22,7 +30,7 @@ public:
 
 	static BaseExpression *Parse(std::string InfixExpression, bool bDisplayInfix);
 
-	static const int typeId = 'base';
+	static constexpr const TypeID typeId { "base" };
 };
 
 void DisplayExpressionTree(BaseExpression *root);
@@ -51,7 +59,7 @@ public:
 	void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override;
 
 	bool AmIHigherPrecedence(OperatorNode *rhs);
-	static const int typeId = 'oprt';
+	static constexpr const TypeID typeId { "oprt" };
 };
 
 
@@ -68,7 +76,8 @@ public:
 	bool IsLeaf();
 	bool isType(int type) override;
 	int getType() const override;
-	static const int typeId = 'biop';
+	static constexpr const TypeID typeId { "biop" };
+	
 };
 
 class NumberNode : public OperandNode {
@@ -83,7 +92,7 @@ public:
 	bool IsLeaf();
 	int getType() const override;
 	bool isType(int type) override;
-	static const int typeId = 'bumr';
+	static constexpr const TypeID typeId { "bumr" };
 };
 
 class PlusOperator : public BinaryOperator {
@@ -96,7 +105,7 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = '+opr';
+	static constexpr const TypeID typeId { "+opr" };
 };
 
 class MinusOperator : public BinaryOperator {
@@ -109,7 +118,7 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = '-opr';
+	static constexpr const TypeID typeId { "-opr" };
 };
 
 class MultiplyOperator : public BinaryOperator {
@@ -122,7 +131,7 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = '*opr';
+	static constexpr const TypeID typeId { "*opr" };
 };
 
 class DivideOperator : public BinaryOperator {
@@ -135,7 +144,7 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = '/opr';
+	static constexpr const TypeID typeId { "/opr" };
 };
 
 class BracketNode : public OperatorNode {
@@ -147,7 +156,7 @@ public:
 	bool IsLeaf();
 	int getType() const override;
 	bool isType(int type) override;
-	static const int typeId = '()op';
+	static constexpr const TypeID typeId { "()op" };
 };
 
 class BracketOpenNode : public BracketNode {
@@ -160,7 +169,7 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = '(opr';
+	static constexpr const TypeID typeId { "(opr" };
 };
 
 class BracketCloseNode : public BracketNode {
@@ -173,7 +182,7 @@ public:
 	void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = ')opr';
+	static constexpr const TypeID typeId { ")opr" };
 };
 
 class EndOfExpressionNode : public BracketNode {
@@ -185,5 +194,5 @@ public:
 	bool isType(int type) override;
 	int GetPrecedence();
 	Direction GetDirection();
-	static const int typeId = 'endx';
+	static constexpr const TypeID typeId { "endx" };
 };

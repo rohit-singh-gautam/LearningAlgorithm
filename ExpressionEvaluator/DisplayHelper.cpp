@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "EvaluateExpression.h"
 #include <iostream>
 #include <stack>

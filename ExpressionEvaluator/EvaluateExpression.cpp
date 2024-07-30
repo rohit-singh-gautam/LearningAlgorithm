@@ -1,8 +1,8 @@
-#include "pch.h"
 #include "EvaluateExpression.h"
 #include <cctype>
 #include <iostream>
 #include <stack>
+#include <exception>
 
 
 void NormalizeNumber(std::string &num) {
@@ -13,7 +13,7 @@ void NormalizeNumber(std::string &num) {
 	int cntpoint = 0;
 	for (char c : num) if (c == '.') cntpoint++;
 	if (cntpoint > 1) {
-		throw new std::exception("Numbers cannot have two decimal point");
+		throw std::domain_error("Numbers cannot have two decimal point");
 	}
 
 	//Remove trailing .
@@ -24,6 +24,7 @@ void NormalizeNumber(std::string &num) {
 		num.erase(0, 1);
 	}
 }
+
 std::vector<BaseExpression *> TokenizeToObject(std::string InfixExpression) {
 	const size_t n = InfixExpression.size();
 	std::vector<BaseExpression *> InfixToken;
@@ -72,7 +73,7 @@ std::vector<BaseExpression *> TokenizeToObject(std::string InfixExpression) {
 				InfixToken.push_back(new BracketCloseNode(InfixExpression.substr(i, 1)));
 				break;
 			default:
-				throw new std::exception("Unknown exception");
+				throw new std::domain_error("Unknown character found exception");
 			}
 			i++;
 		}
@@ -98,23 +99,23 @@ BaseExpression *ParseInfixToken(std::vector<BaseExpression *> &tokens) {
 	}
 
 	if (Operands.empty()) {
-		throw std::exception("Insufficient operands, wrong syntax");
+		throw std::domain_error("Insufficient operands, wrong syntax");
 	}
 
 	if (Operands.size() > 1) {
-		throw std::exception("Too many operands, wrong syntax");
+		throw std::domain_error("Too many operands, wrong syntax");
 	}
 
 	if (Operators.empty()) {
-		throw std::exception("Internal error or wrong syntax, operators empty, end of expression marker not present");
+		throw std::domain_error("Internal error or wrong syntax, operators empty, end of expression marker not present");
 	}
 
 	if (Operators.size() > 1) {
-		throw std::exception("Too many operators, wrong syntax or internal error");
+		throw std::domain_error("Too many operators, wrong syntax or internal error");
 	}
 
 	if (typeid(*Operators.top()) != typeid(EndOfExpressionNode)) {
-		throw std::exception("Internal error or wrong syntax, end of expression marker not present");
+		throw std::domain_error("Internal error or wrong syntax, end of expression marker not present");
 	}
 
 	Operators.pop();
@@ -213,11 +214,11 @@ void OperatorNode::ProcessToken(std::stack<OperatorNode *> &Operators, std::stac
 		auto &childrens = Op->GetChildren();
 		for (size_t i = childrens.size(); i > 0; i--) {
 			if (Operands.empty()) {
-				throw std::exception("Insufficient operands, wrong syntax");
+				throw std::domain_error("Insufficient operands, wrong syntax");
 			}
 
 			if (childrens[i - 1] != nullptr) {
-				throw std::exception("Operands already present, wrong syntax or internal error");
+				throw std::domain_error("Operands already present, wrong syntax or internal error");
 			}
 
 			childrens[i - 1] = Operands.top();
@@ -241,7 +242,7 @@ BaseExpression * BinaryOperator::GetRight()
 void BinaryOperator::ThrowInvalid()
 {
 	if (Children[0] == nullptr || Children[1] == nullptr) {
-		throw new std::exception("Binary operator requires both left and right operator");
+		throw new std::domain_error("Binary operator requires both left and right operator");
 	}
 }
 
@@ -256,7 +257,7 @@ std::vector<BaseExpression*>& BinaryOperator::GetChildren()
 
 double BinaryOperator::GetValue()
 {
-	throw new std::exception("Operator cannot have value");
+	throw new std::domain_error("Operator cannot have value");
 }
 
 bool BinaryOperator::IsLeaf()
@@ -425,17 +426,17 @@ BracketNode::BracketNode(std::string br) : OperatorNode(br)
 
 std::vector<BaseExpression*>& BracketNode::GetChildren()
 {
-	throw new std::exception("Temporary node, does not have child");
+	throw new std::domain_error("Temporary node, does not have child");
 }
 
 double BracketNode::GetValue()
 {
-	throw new std::exception("Brackets does not have values");
+	throw new std::domain_error("Brackets does not have values");
 }
 
 double BracketNode::Evaluate()
 {
-	throw new std::exception("Cannot evaluate brackets");
+	throw new std::domain_error("Cannot evaluate brackets");
 }
 
 bool BracketNode::IsLeaf()
@@ -518,11 +519,11 @@ void BracketCloseNode::ProcessToken(std::stack<OperatorNode *> &Operators, std::
 		auto &childrens = Op->GetChildren();
 		for (size_t i = childrens.size(); i > 0; i--) {
 			if (Operands.empty()) {
-				throw std::exception("Insufficient operands, wrong syntax");
+				throw std::domain_error("Insufficient operands, wrong syntax");
 			}
 
 			if (childrens[i - 1] != nullptr) {
-				throw std::exception("Operands already present, wrong syntax or internal error");
+				throw std::domain_error("Operands already present, wrong syntax or internal error");
 			}
 
 			childrens[i - 1] = Operands.top();
@@ -531,7 +532,7 @@ void BracketCloseNode::ProcessToken(std::stack<OperatorNode *> &Operators, std::
 		Operands.push(Op);
 	}
 	if (Operators.empty() || Operators.top()->getType() != BracketOpenNode::typeId) {
-		throw std::exception("Bracket close without open, wrong syntax");
+		throw std::domain_error("Bracket close without open, wrong syntax");
 	}
 	Operators.pop();
 }
