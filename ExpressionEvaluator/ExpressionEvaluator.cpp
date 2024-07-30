@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
 		"2 * 3",
 		"6 / 4",
 		"1.4*2.6+3.2+02.39+2.5*3/2",
+		"10 + 20",
+		"1.0 + 2.20"
 	};
 
 	for (const auto &exp : explist) {
