@@ -56,22 +56,17 @@ auto inorderTraversal(TreeNode<T>* root) {
 
 template <typename T>
 auto preorderTraversal(TreeNode<T>* root) {
-	std::vector<T> ans;
-	std::stack<TreeNode<T>*> st;
-
-	while (root) {
-		ans.push_back(root->val);
+	std::vector<T> ans  { };
+	if (root) {
+		std::stack<TreeNode<T>*> st { };
 		st.push(root);
-		root = root->left;
-	}
 
-	while (!st.empty()) {
-		root = st.top()->right;
-		st.pop();
-		while (root) {
-			ans.push_back(root->val);
-			st.push(root);
-			root = root->left;
+		while (!st.empty()) {
+			auto newnode = st.top();
+			st.pop();
+			ans.push_back(newnode->val);
+			if (newnode->right) st.push(newnode->right);
+			if (newnode->left) st.push(newnode->left);
 		}
 	}
 
