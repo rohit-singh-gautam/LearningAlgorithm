@@ -42,6 +42,18 @@ bool findmatch(const std::string &text, const std::string &wld) {
 	return seq[n][m];
 }
 
+bool findmatchrecursive(const std::string &text, const std::string &wld, int textindex, int wldindex) {
+	if (textindex == -1 || wldindex == -1) return textindex == -1 && wldindex == -1;
+	if (wld[wldindex] == '.') return findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
+	if (wld[wldindex] == '*') return findmatchrecursive(text, wld, textindex - 1, wldindex) || findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
+	if (text[textindex] == wld[wldindex]) return findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
+	return false;
+}
+
+bool findmatchrecursive(const std::string &text, const std::string &wld) {
+	return findmatchrecursive(text, wld, text.size() - 1, wld.size() - 1);
+}
+
 
 //NOT WORKING
 bool findmatchfast(const std::string &text, const std::string &wld) {
@@ -91,8 +103,9 @@ int main()
 		std::cout << "TEXT: " << test.first << std::endl;
 
 		for (const auto& srch : test.second) {
-			const auto ret = findmatch(test.first, srch) ? "true" : "false";
-			std::cout << "\tRESULT: " << ret << "; SEARCH: " << srch << std::endl;
+			const auto ret = findmatchrecursive(test.first, srch) ? "true" : "false";
+			const auto ret1 = findmatch(test.first, srch) ? "true" : "false";
+			std::cout << "\tRESULT: Recursive: " << ret << ", Iterative: " << ret1 << "; SEARCH: " << srch << std::endl;
 		}
 
 		std::cout << std::endl;
