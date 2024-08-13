@@ -90,6 +90,7 @@ public:
 	template <class... Types>
 	TestProperties(Types... args) : properties { (args | ...) }, propertystring { CreatePropertiesString(properties) } { }
 	TestProperties(size_t properties) : properties { properties }, propertystring { CreatePropertiesString(properties) } { }
+	virtual ~TestProperties() = default;
 
 	const auto &GetProperyString() const { return propertystring; }
 	auto GetProperty() const { return properties; }
@@ -125,8 +126,8 @@ public:
 class TestClassBase : public TestProperties {
 protected:
 	size_t NumberOfArraySorted  { 0 };
-	decltype(std::chrono::high_resolution_clock::now()) begin_time;
-	decltype(std::chrono::high_resolution_clock::now()) end_time;
+	decltype(std::chrono::high_resolution_clock::now()) begin_time { };
+	decltype(std::chrono::high_resolution_clock::now()) end_time { };
 	std::chrono::duration<double> elapsed_time { 0 };
 
 	size_t InitialSortedAsc { 0 };
@@ -207,7 +208,7 @@ private:
 	std::vector<std::vector<int>> &arrays;
 
 protected:
-	std::string Name;
+	std::string Name { };
 	virtual void SortAlgorithm(std::vector<int> &a) {
 		auto sortmaps = GetSortMapping();
 		auto sortfunctionitr = sortmaps.find(GetProperty());

@@ -1,17 +1,11 @@
 #include "TestClassContainer.h"
 #include <iostream>
-#include <sstream>
+#include <string>
 
 using namespace std;
 
-std::string ToString(const int val) {
-	ostringstream buffer;
-	buffer << val;
-	return buffer.str();
-}
-
 void DisplayString(const int val, const size_t size, const DisplayAlignment alignment) {
-	DisplayString(ToString(val), size, alignment);
+	DisplayString(std::to_string(val), size, alignment);
 }
 
 void DisplayString(const std::string &str, const size_t size, const DisplayAlignment alignment) {
