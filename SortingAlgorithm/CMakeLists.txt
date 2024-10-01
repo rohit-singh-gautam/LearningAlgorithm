@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.28)
 
 project(SortingAlgorithm)
 
 add_compile_options(-Wall -Werror -Wpedantic -Wextra -Weffc++ -fanalyzer)
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(SortingAlgorithm
     DisplayHelper.cpp
@@ -12,4 +10,4 @@ add_executable(SortingAlgorithm
     AllSortInitialization.cpp
 )
 
-set_property(TARGET SortingAlgorithm PROPERTY CXX_STANDARD 23)
+set_property(TARGET SortingAlgorithm PROPERTY CXX_STANDARD 26)
