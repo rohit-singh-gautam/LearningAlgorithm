@@ -4,5 +4,7 @@ project(tictactoe)
 
 add_executable(tictactoe main.cpp Board.h  Evaluator.h  Intelligence.h  TicTacToeEngine.h)
 
-set_property(TARGET tictactoe PROPERTY CXX_STANDARD 20)
+add_compile_options(-Wall -Werror -Wpedantic -Wextra -Weffc++ -Wsuggest-override -fanalyzer)
+
+set_property(TARGET tictactoe PROPERTY CXX_STANDARD 23)
 
