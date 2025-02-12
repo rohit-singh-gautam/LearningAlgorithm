@@ -7,4 +7,4 @@ add_compile_options(-Wall -Werror)
 
 add_executable(ExpressionEvaluator ExpressionEvaluator.cpp EvaluateExpression.cpp DisplayHelper.cpp)
 
-set_property(TARGET ExpressionEvaluator PROPERTY CXX_STANDARD 23)
+target_compile_features(ExpressionEvaluator PRIVATE cxx_std_23)
