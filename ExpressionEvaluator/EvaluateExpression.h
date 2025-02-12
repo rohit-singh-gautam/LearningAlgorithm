@@ -27,6 +27,12 @@ public:
 	constexpr BaseExpression(const std::string &originalString) : OriginalString(originalString) { }
 	constexpr BaseExpression(std::string &&originalString) : OriginalString(originalString) { }
 	constexpr BaseExpression() : OriginalString { } { }
+	BaseExpression(const BaseExpression &) = delete;
+	BaseExpression(BaseExpression &&) = delete;
+	BaseExpression &operator=(const BaseExpression &) = delete;
+
+	constexpr virtual ~BaseExpression() { }
+
 	constexpr virtual const std::vector<BaseExpression *> &GetChildren() const = 0;
 	constexpr virtual std::vector<BaseExpression *> &GetChildren() = 0;
 	constexpr virtual double GetValue() const = 0;
@@ -54,7 +60,7 @@ void DisplayExpressionTree(BaseExpression *root);
 class OperandNode : public BaseExpression {
 public:
 	using BaseExpression::BaseExpression;
-	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override {
+	constexpr void ProcessToken(std::stack<OperatorNode *> &, std::stack<OperandNode *> &Operands) override {
 		Operands.push(this);
 	}
 	constexpr bool isType(int type) const override {
@@ -243,7 +249,7 @@ class BracketOpenNode : public BracketNode {
 public:
 	using BracketNode::BracketNode;
 	constexpr const std::string &ToString() const override { return BracketOpenString; }
-	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override { Operators.push(this); }
+	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &) override { Operators.push(this); }
 	constexpr int getType() const override { return typeId; }
 	constexpr bool isType(int type) const override { return BracketOpenNode::typeId == type || BracketNode::isType(type);}
 	static constexpr const TypeID typeId { "(opr" };
