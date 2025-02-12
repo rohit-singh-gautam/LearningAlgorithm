@@ -4,4 +4,4 @@ project(RateLimiter)
 
 add_executable(RateLimiter RateLimiter.cpp)
 
-set_property(TARGET RateLimiter PROPERTY CXX_STANDARD 23)
+target_compile_features(RateLimiter PUBLIC cxx_std_23)

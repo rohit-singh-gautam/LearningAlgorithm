@@ -4,5 +4,5 @@ project(MinSlidingWindow)
 
 add_executable(MinSlidingWindow MinSlidingWindow.cpp)
 
-set_property(TARGET MinSlidingWindow PROPERTY CXX_STANDARD 23)
+target_compile_features(MinSlidingWindow PRIVATE cxx_std_23)
 
