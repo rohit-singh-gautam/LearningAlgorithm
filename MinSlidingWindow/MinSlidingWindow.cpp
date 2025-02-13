@@ -74,9 +74,8 @@ std::vector<T> SlidingWindow1(const std::vector<T> &arr, size_t windowSize) {
 		MinWindowQueue.push_back(0);
 		size_t index { 1 };
 		for(; index < windowSize; ++index) {
-			if(arr[index] <= arr[MinWindowQueue.front()]) {
-				MinWindowQueue.front() = index;
-			}
+			while(!MinWindowQueue.empty() && !comparator { } (arr[MinWindowQueue.back()], arr[index])) MinWindowQueue.pop_back();
+			MinWindowQueue.push_back(index);
 		}
 
 		do {
@@ -85,7 +84,7 @@ std::vector<T> SlidingWindow1(const std::vector<T> &arr, size_t windowSize) {
 				MinWindowQueue.pop_front();
 			}
 
-			while(!MinWindowQueue.empty() && arr[index] <= arr[MinWindowQueue.back()]) MinWindowQueue.pop_back();
+			while(!MinWindowQueue.empty() && !comparator { } (arr[MinWindowQueue.back()], arr[index])) MinWindowQueue.pop_back();
 			MinWindowQueue.push_back(index++);
 		} while(index < arr.size());
 		ans.push_back(arr[MinWindowQueue.front()]);
@@ -108,7 +107,7 @@ std::vector<T> SlidingWindow2(const std::vector<T> &arr, size_t windowSize) {
 
 		for(const auto &value: arr) {
 			for(auto &winValue: std::ranges::reverse_view(MinWindowQueue)) {
-				if (value < winValue) {
+				if (comparator {} (value, winValue)) {
 					winValue = value;
 				} else break;
 			}
@@ -149,7 +148,16 @@ int main()
 		if (ans1 != ans2) {
 			std::cout << "Error: " << ans1 << " != " << ans2 << std::endl;
 		}
-		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	for (const auto& test : tests) {
+		std::cout << "Array: " << test.second << std::endl;
+		auto ans1 = SlidingWindow1<int, std::greater<int>>(test.second, test.first);
+		auto ans2 = SlidingWindow2<int, std::greater<int>>(test.second, test.first);
+		std::cout << "Windows (" << test.first << "): " << ans1 << std::endl;
+		if (ans1 != ans2) {
+			std::cout << "Error: " << ans1 << " != " << ans2 << std::endl;
+		}
 	}
     return 0;
 }
