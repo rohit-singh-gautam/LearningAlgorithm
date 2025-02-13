@@ -41,7 +41,7 @@ void test(std::vector<std::pair<std::vector<NumType>, size_t>> &tests) {
     }
 }
 
-int main(int const argc, char const *argv[]) {
+int main(int const, char const *[]) {
     std::vector<std::pair<std::vector<int>, size_t>> tests {
         {{35, 12, 24, 55, 10}, 3},
         {{10}, 1},
