@@ -43,7 +43,7 @@ public:
 	constexpr virtual int getType() const { return typeId; };
 	constexpr virtual bool isType(int type) const { return BaseExpression::typeId == type; };
 
-	static constexpr BaseExpression *Parse(std::string InfixExpression, bool bDisplayInfix) {
+	static BaseExpression *Parse(std::string InfixExpression, bool bDisplayInfix) {
 		auto InfixToken = TokenizeToObject(InfixExpression);
 		if (bDisplayInfix) std::cout << InfixToken;
 
@@ -60,7 +60,7 @@ void DisplayExpressionTree(BaseExpression *root);
 class OperandNode : public BaseExpression {
 public:
 	using BaseExpression::BaseExpression;
-	constexpr void ProcessToken(std::stack<OperatorNode *> &, std::stack<OperandNode *> &Operands) override {
+	void ProcessToken(std::stack<OperatorNode *> &, std::stack<OperandNode *> &Operands) override {
 		Operands.push(this);
 	}
 	constexpr bool isType(int type) const override {
@@ -80,11 +80,11 @@ public:
 		return OperandNode::typeId == type || OperandNode::isType(type);
 	}
 
-	constexpr virtual int GetPrecedence() const = 0;
-	constexpr double GetValue() const override { throw new std::domain_error("Operator cannot have value"); }
-	constexpr const std::vector<BaseExpression *> &GetChildren() const override { throw new std::domain_error("Temporary node, does not have child"); }
-	constexpr std::vector<BaseExpression *> &GetChildren() override { throw new std::domain_error("Temporary node, does not have child"); }
-	constexpr double Evaluate() const override { throw new std::domain_error("Cannot evaluate operator"); }
+	virtual int GetPrecedence() const = 0;
+	double GetValue() const override { throw new std::domain_error("Operator cannot have value"); }
+	const std::vector<BaseExpression *> &GetChildren() const override { throw new std::domain_error("Temporary node, does not have child"); }
+	std::vector<BaseExpression *> &GetChildren() override { throw new std::domain_error("Temporary node, does not have child"); }
+	double Evaluate() const override { throw new std::domain_error("Cannot evaluate operator"); }
 
 	enum Direction {
 		InvalidDirection,
@@ -92,7 +92,7 @@ public:
 		RightToLeft
 	};
 	constexpr virtual Direction GetDirection() const = 0;
-	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override
+	void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override
 	{
 		while (!Operators.empty() && Operators.top()->AmIHigherPrecedence(this)) {
 			OperatorNode *Op = Operators.top();
@@ -152,10 +152,10 @@ class NumberNode : public OperandNode {
 protected:
 	const double Value;
 public:
-	constexpr NumberNode(const std::string &number) : OperandNode { number }, Value { std::stod(number) } { }
+	NumberNode(const std::string &number) : OperandNode { number }, Value { std::stod(number) } { }
 
-	constexpr const std::vector<BaseExpression *> &GetChildren() const override { throw std::domain_error("Number Node does not have children"); }
-	constexpr std::vector<BaseExpression *> &GetChildren() override { throw std::domain_error("Number Node does not have children"); }
+	const std::vector<BaseExpression *> &GetChildren() const override { throw std::domain_error("Number Node does not have children"); }
+	std::vector<BaseExpression *> &GetChildren() override { throw std::domain_error("Number Node does not have children"); }
 
 	constexpr double GetValue() const override { return Value; }
 	constexpr double Evaluate() const override { return Value; };
@@ -168,7 +168,7 @@ public:
 };
 
 class PlusOperator : public BinaryOperator {
-	static constexpr const std::string PlusString { "+" };
+	static inline const std::string PlusString { "+" };
 public:
 	using BinaryOperator::BinaryOperator;
 	constexpr const std::string &ToString() const override { return PlusString; }
@@ -186,7 +186,7 @@ public:
 };
 
 class MinusOperator : public BinaryOperator {
-	static constexpr const std::string MinusString { "-" };
+	static inline const std::string MinusString { "-" };
 public:
 	using BinaryOperator::BinaryOperator;
 	constexpr const std::string &ToString() const override { return MinusString; }
@@ -202,7 +202,7 @@ public:
 };
 
 class MultiplyOperator : public BinaryOperator {
-	static constexpr const std::string MultiplyString { "*" };
+	static inline const std::string MultiplyString { "*" };
 public:
 	using BinaryOperator::BinaryOperator;
 	constexpr const std::string &ToString() const override { return MultiplyString; }
@@ -218,7 +218,7 @@ public:
 };
 
 class DivideOperator : public BinaryOperator {
-	static constexpr const std::string DivideString { "/" };
+	static inline const std::string DivideString { "/" };
 public:
 	using BinaryOperator::BinaryOperator;
 	constexpr const std::string &ToString() const override { return DivideString; }
@@ -245,24 +245,24 @@ public:
 };
 
 class BracketOpenNode : public BracketNode {
-	static constexpr const std::string BracketOpenString { "(" };
+	static inline const std::string BracketOpenString { "(" };
 public:
 	using BracketNode::BracketNode;
 	constexpr const std::string &ToString() const override { return BracketOpenString; }
-	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &) override { Operators.push(this); }
+	void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &) override { Operators.push(this); }
 	constexpr int getType() const override { return typeId; }
 	constexpr bool isType(int type) const override { return BracketOpenNode::typeId == type || BracketNode::isType(type);}
 	static constexpr const TypeID typeId { "(opr" };
 };
 
 class BracketCloseNode : public BracketNode {
-	static constexpr const std::string BracketCloseString { ")" };
+	static inline const std::string BracketCloseString { ")" };
 public:
 	using BracketNode::BracketNode;
 	constexpr const std::string &ToString() const override { return BracketCloseString; }
 	constexpr int getType() const override { return typeId; }
 	constexpr bool isType(int type) const override { return BracketCloseNode::typeId == type || BracketNode::isType(type);}
-	constexpr void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override
+	void ProcessToken(std::stack<OperatorNode *> &Operators, std::stack<OperandNode *> &Operands) override
 	{
 		while (!Operators.empty() && Operators.top()->getType() != BracketOpenNode::typeId) {
 			OperatorNode *Op = Operators.top();
@@ -291,7 +291,7 @@ public:
 };
 
 class EndOfExpressionNode : public BracketNode {
-	static constexpr const std::string EndOfExpressionString { "#" };
+	static inline const std::string EndOfExpressionString { "#" };
 public:
 	using BracketNode::BracketNode;
 	constexpr const std::string &ToString() const override { return EndOfExpressionString; }

@@ -29,11 +29,11 @@ void GetExpressionTreeParameter(BaseExpression *root, int &maxstring, int &heigh
 	}
 }
 
-std::string DisplayCenter(BaseExpression *root, int width) {
+std::string DisplayCenter(BaseExpression *root, const auto width) {
 	const std::string &text = root == nullptr ? "" : root->ToString();
-	int totalpad = width - text.size() + 1;
-	int leftpad = (totalpad - 1) / 2;
-	int rightpad = totalpad / 2;
+	auto totalpad = width - text.size() + 1;
+	auto leftpad = (totalpad - 1) / 2;
+	auto rightpad = totalpad / 2;
 	return std::string(leftpad, ' ') + text + std::string(rightpad, ' ');
 }
 
@@ -41,16 +41,16 @@ void TrimEnd(std::string &text) {
 	while (text.back() == ' ') text.pop_back();
 }
 
-void DisplayExpressionTree(BaseExpression *root, int maxstring, int height) {
+void DisplayExpressionTree(BaseExpression *root, auto maxstring, auto height) {
 	if (root == nullptr) return;
 
-	long currwidth = (maxstring + 2) * (1 << (height - 1));
+	auto currwidth = (maxstring + 2) * (1 << (height - 1));
 
 	std::queue<BaseExpression *> nodes;
 	nodes.push(root);
 	size_t nullcount = 0;
 	while (!nodes.empty() && nullcount < nodes.size()) {
-		int count = nodes.size();
+		auto count = nodes.size();
 		nullcount = 0;
 		std::string text;
 		for (int i = 0; i < count; i++) {
