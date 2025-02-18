@@ -103,7 +103,7 @@ std::vector<T> SlidingWindow2(const std::vector<T> &arr, size_t windowSize) {
 	} else if (windowSize == 1) {
 		ans.insert(std::begin(ans), std::begin(arr), std::end(arr));
 	} else {
-		std::deque<size_t> MinWindowQueue { };
+		std::deque<T> MinWindowQueue { };
 
 		for(const auto &value: arr) {
 			for(auto &winValue: std::ranges::reverse_view(MinWindowQueue)) {
