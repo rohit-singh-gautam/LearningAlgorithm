@@ -15,4 +15,4 @@ add_executable(SortingAlgorithm
     Priority.cpp
 )
 
-set_property(TARGET SortingAlgorithm PROPERTY CXX_STANDARD 26)
+target_compile_features(SortingAlgorithm PRIVATE cxx_std_23)
