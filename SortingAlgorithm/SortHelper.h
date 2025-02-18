@@ -21,8 +21,6 @@
 #include <string>
 #include <iostream>
 
-std::string ToString(const int val);
-
 enum DisplayAlignment {
 	DisplayCenter,
 	DisplayLeft,

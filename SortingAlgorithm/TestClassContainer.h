@@ -31,7 +31,7 @@
 
 template<>
 struct std::hash<std::pair<std::string_view, size_t>> {
-    constexpr size_t operator()(const std::pair<std::string_view, size_t> &pr) const noexcept {
+    inline size_t operator()(const std::pair<std::string_view, size_t> &pr) const noexcept {
         const auto &[name, property] = pr;
         const size_t h1 = std::hash<std::string_view>{}(name);
         const size_t h2 = std::hash<size_t>{}(property);
@@ -132,7 +132,7 @@ public:
 
         const auto DisplayPeriod = std::chrono::milliseconds(1000);
         std::cout << "Sorting ";
-        int current = 0;
+        size_t current = 0;
         auto begin_time = std::chrono::high_resolution_clock::now();
         auto prev_time = begin_time;
         while (current + NumberOfArrayToSortAtOnce <= arrays.size()) {

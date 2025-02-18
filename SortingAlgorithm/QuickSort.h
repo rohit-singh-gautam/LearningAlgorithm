@@ -258,7 +258,6 @@ public:
 
 private:
 	void SortAlgorithm(std::vector<int> &a) override {
-		auto sortmaps = GetSortMapping();
 		auto sortfunctionitr = sortmaps.find(GetProperty());
 		if (sortfunctionitr == std::end(sortmaps)) {
 			throw std::invalid_argument("Unsupported sorting alogrithm");

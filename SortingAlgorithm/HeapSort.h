@@ -35,7 +35,7 @@ inline size_t LeafSize(const size_t size) {
 }
 
 inline size_t ToWidth(const int val) {
-	string str = ToString(val);
+	string str = std::to_string(val);
 	return str.size();
 }
 

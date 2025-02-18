@@ -15,28 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/ //
 //////////////////////////////////////////////////////////////////////////
 
-#include "SortHelper.h"
-#include "TestClassContainer.h"
-#include "Priority.h"
-#include <iostream>
-#include <unordered_set>
+#pragma once
 
-int main()
-{
-	const int NumberOfArrayToSortAtOnce = 1;
-	const int arraycount = 10000;
-	const int arraysize = 4064;
-
-	const std::unordered_set<std::pair<std::string_view, size_t>> skiptestlist {
-		{"Bubble Sort", TestProperties { TestProperties::N_Square, TestProperties::Iterative }},
-		{"Selection Sort", TestProperties { TestProperties::N_Square, TestProperties::Iterative }},
-		{"QuickSort Sort", TestProperties { TestProperties::N_LogN, TestProperties::Iterative, TestProperties::Randomize }},
-		{"QuickSort Sort", TestProperties { TestProperties::N_LogN, TestProperties::Recursive, TestProperties::Randomize }}
-	};
-
-	SetPriority();
-
-	TestClassContainer::TestAllSortingAlgorigthmAllOrders(arraycount, arraysize, NumberOfArrayToSortAtOnce, skiptestlist);
-
-	return 0;
-}
+void SetPriority();

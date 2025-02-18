@@ -37,7 +37,7 @@ class TestProperties {
 	const size_t properties;
 	const std::string propertystring;
 
-	const auto CreatePropertiesString(size_t properties) {
+	static auto CreatePropertiesString(size_t properties) {
 		std::string property_string { "{ " };
 
 		if(properties & N_Square) {
@@ -307,8 +307,8 @@ public:
 
 	template <typename StorageType>
 	static void Display(std::vector<StorageType> &a, const char *str, bool bDispSorted) {
-		bool bDispColon;
-		bool bDispBracket;
+		bool bDispColon { false };
+		bool bDispBracket { false};
 		if (str != nullptr && *str != '\0') {
 			std::cout << str;
 			bDispColon = true;

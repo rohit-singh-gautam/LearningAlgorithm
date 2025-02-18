@@ -61,7 +61,7 @@ private:
 			i++;
 		}
 
-		for (size_t i = 0; i < n; ++i) {
+		for (i = 0; i < n; ++i) {
 			a[start + i] = buffer[i];
 		}
 
