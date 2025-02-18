@@ -10,5 +10,5 @@ endif()
 
 add_executable(MinSlidingWindow MinSlidingWindow.cpp)
 
-target_compile_features(MinSlidingWindow PRIVATE cxx_std_23)
+target_compile_features(MinSlidingWindow PRIVATE cxx_std_20)
 
