@@ -1,5 +1,6 @@
 #include "kmax.h"
 #include <iostream>
+#include <algorithm>
 
 template <typename NumType>
 std::ostream &operator<<(std::ostream &os, const std::vector<NumType> &values) {
