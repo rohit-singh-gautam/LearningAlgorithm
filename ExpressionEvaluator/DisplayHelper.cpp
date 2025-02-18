@@ -53,7 +53,7 @@ void DisplayExpressionTree(BaseExpression *root, auto maxstring, auto height) {
 		auto count = nodes.size();
 		nullcount = 0;
 		std::string text;
-		for (int i = 0; i < count; i++) {
+		for (decltype(count) i = 0; i < count; i++) {
 			BaseExpression *curr = nodes.front();
 			nodes.pop();
 			text += DisplayCenter(curr, currwidth);
