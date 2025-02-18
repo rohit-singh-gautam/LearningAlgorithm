@@ -24,7 +24,7 @@ public:
         size_t tokens_to_add = last_duration / token_add_duration;
         if (tokens_to_add) {
             size_t new_token_count = token_count + tokens_to_add;
-            token_count = std::min(token_count + tokens_to_add, max_token);
+            token_count = std::min(new_token_count, max_token);
             last_refill += tokens_to_add * token_add_duration;
         }
         if (token_count) {
