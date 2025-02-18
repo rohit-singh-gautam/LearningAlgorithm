@@ -10,4 +10,4 @@ endif()
 
 add_executable(kmax kmax.cpp kmax.h)
 
-target_compile_features(kmax PUBLIC cxx_std_23)
+target_compile_features(kmax PUBLIC cxx_std_20)
