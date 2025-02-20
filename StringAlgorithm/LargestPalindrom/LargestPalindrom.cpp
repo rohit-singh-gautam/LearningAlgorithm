@@ -14,6 +14,8 @@ auto LongestPallindromeSubstring(const std::string &text) {
     size_t max_size = 1;
     size_t max_center = 0;
 
+    if (text.size() == 1) return std::pair { max_center, max_size };
+
     std::vector<size_t> track(text.size() * 2 - 1, 0 );
     track[0] = 1;
 
