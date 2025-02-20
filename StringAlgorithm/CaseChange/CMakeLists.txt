@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 
 project(CaseChange)
 
+if (UNIX)
+add_compile_options(-Wall -Werror -Wpedantic -Wextra -Weffc++ -Wsuggest-override) # -fanalyzer
+elseif (MSVC)
+add_compile_options(/W4 /WX)
+endif()
+
 add_executable(CaseChange CaseChange.cpp)
 
-set_property(TARGET CaseChange PROPERTY CXX_STANDARD 20)
+target_compile_features(CaseChange PUBLIC cxx_std_20)
