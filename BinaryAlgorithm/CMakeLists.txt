@@ -10,5 +10,5 @@ endif()
 
 add_executable(BinaryAlgorithm BinaryAlgorithm.cpp)
 
-set_property(TARGET BinaryAlgorithm PROPERTY CXX_STANDARD 20)
+target_compile_features(BinaryAlgorithm PUBLIC cxx_std_20)
 
