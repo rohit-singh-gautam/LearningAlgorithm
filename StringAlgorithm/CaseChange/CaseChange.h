@@ -4,7 +4,6 @@
 template <int typesize>
 class SizeToType {
 public:
-    using TYPE = void;
     static constexpr int bytes = typesize;
 };
 
@@ -125,6 +124,7 @@ public:
 };
 
 constexpr void to_upper(char *ch, size_t size) {
+#if defined(__GNUC__)
     while(size >= 16) {
         CharHelper<16>::to_upper(ch);
         ch += 16;
@@ -136,6 +136,13 @@ constexpr void to_upper(char *ch, size_t size) {
         ch += 8;
         size -= 8;
     }
+#else
+    while(size >= 8) {
+        CharHelper<8>::to_upper(ch);
+        ch += 8;
+        size -= 8;
+    }
+#endif
 
     if (size >= 4) {
         CharHelper<4>::to_upper(ch);
@@ -159,6 +166,7 @@ constexpr void to_upper(std::string &text) {
 }
 
 constexpr void to_lower(char *ch, size_t size) {
+#if defined(__GNUC__)
     while(size >= 16) {
         CharHelper<16>::to_lower(ch);
         ch += 16;
@@ -170,6 +178,13 @@ constexpr void to_lower(char *ch, size_t size) {
         ch += 8;
         size -= 8;
     }
+#else
+    while(size >= 8) {
+        CharHelper<8>::to_lower(ch);
+        ch += 8;
+        size -= 8;
+    }
+#endif
 
     if (size >= 4) {
         CharHelper<4>::to_lower(ch);
@@ -184,7 +199,7 @@ constexpr void to_lower(char *ch, size_t size) {
     }
 
     if (size) {
-        CharHelper<2>::to_lower(ch);
+        CharHelper<1>::to_lower(ch);
     }
 }
 

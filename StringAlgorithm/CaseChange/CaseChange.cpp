@@ -14,9 +14,9 @@ void DisplayHex(auto value) {
     const auto max_size = sizeof(value);
 
     for(size_t index { 0 }; index < max_size; ++index) {
-        const auto posvalue = valueptr[index];
-        const auto posvaluelower = posvalue % 16;
-        const auto posvalueupper = posvalue / 16;
+        const uint8_t posvalue = valueptr[index];
+        const uint8_t posvaluelower = posvalue % 16;
+        const uint8_t posvalueupper = posvalue / 16;
         DisplayHexOne(posvalueupper);
         DisplayHexOne(posvaluelower);
     }
@@ -100,6 +100,7 @@ void TestToUpperFixed() {
     CharHelper<8>::to_lower(ch8_);
     std::cout << "Lower: " << ch8_ << std::endl;
 
+#if defined(__GNUC__)
     std::cout << "Value 128: ";
     char ch16_[] {"azAZ{}[]bBxX .|s"};
     const __uint128_t ch128 {*reinterpret_cast<const __uint128_t *>(ch16_)};
@@ -112,6 +113,7 @@ void TestToUpperFixed() {
     std::cout << "Upper: " << ch16_ << std::endl;
     CharHelper<16>::to_lower(ch16_);
     std::cout << "Lower: " << ch16_ << std::endl;
+#endif
 }
 
 
