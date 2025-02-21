@@ -44,7 +44,7 @@ bool findmatch(const std::string &text, const std::string &wld) {
 	return seq[n][m];
 }
 
-bool findmatchrecursive(const std::string &text, const std::string &wld, int textindex, int wldindex) {
+bool findmatchrecursive(const std::string &text, const std::string &wld, size_t textindex, size_t wldindex) {
 	if (textindex == -1 || wldindex == -1) return textindex == -1 && wldindex == -1;
 	if (wld[wldindex] == '.') return findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
 	if (wld[wldindex] == '*') return findmatchrecursive(text, wld, textindex - 1, wldindex) || findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
