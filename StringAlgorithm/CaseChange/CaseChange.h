@@ -36,11 +36,15 @@ public:
     static constexpr int bytes = 8;
 };
 
+
+#if defined(__GNUC__)
 template <>
 class SizeToType<16> {
 public:
     using TYPE = __uint128_t;
+    static constexpr int bytes = 16;
 };
+#endif
 
 template <int typesize>
 class CharHelper : public SizeToType<typesize> {
@@ -91,7 +95,7 @@ public:
         const TYPE AboveEqual128 { static_cast<TYPE>(~value & Get_AboveEqual_128()) };
         const TYPE ASCIIBits { static_cast<TYPE>(value & ~Get_AboveEqual_128()) };
         const TYPE Above_z { static_cast<TYPE>(~(ASCIIBits + Get_Above_z()) & Get_AboveEqual_128()) };
-        const TYPE AboveEqual_a { static_cast<TYPE>(ASCIIBits + Get_AboveEqual_a() & Get_AboveEqual_128()) };
+        const TYPE AboveEqual_a { static_cast<TYPE>((ASCIIBits + Get_AboveEqual_a()) & Get_AboveEqual_128()) };
         const TYPE result = static_cast<TYPE>(AboveEqual128 & Above_z & AboveEqual_a);
         constexpr TYPE shiftright { 2 };
         return result >> shiftright;
@@ -101,7 +105,7 @@ public:
         const TYPE AboveEqual128 { static_cast<TYPE>(~value & Get_AboveEqual_128()) };
         const TYPE ASCIIBits { static_cast<TYPE>(value & ~Get_AboveEqual_128()) };
         const TYPE Above_Z { static_cast<TYPE>(~(ASCIIBits + Get_Above_Z()) & Get_AboveEqual_128()) };
-        const TYPE AboveEqual_A { static_cast<TYPE>(ASCIIBits + Get_AboveEqual_A() & Get_AboveEqual_128()) };
+        const TYPE AboveEqual_A { static_cast<TYPE>((ASCIIBits + Get_AboveEqual_A()) & Get_AboveEqual_128()) };
         const TYPE result = static_cast<TYPE>(AboveEqual128 & Above_Z & AboveEqual_A);
         constexpr TYPE shiftright { 2 };
         return result >> shiftright;

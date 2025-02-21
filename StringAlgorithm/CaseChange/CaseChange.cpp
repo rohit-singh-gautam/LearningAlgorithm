@@ -46,10 +46,12 @@ void TestRepeat() {
     DisplayHex(val64);
     std::cout << std::endl;
 
+#if defined(__GNUC__)
     const auto val128 = CharHelper<16>::RepeatByte(ch);
     std::cout << "Value 128: ";
     DisplayHex(val128);
     std::cout << std::endl;
+#endif
 }
 
 void TestToUpperFixed() {
@@ -137,7 +139,7 @@ void TestToUpper() {
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int, char *[]) {
     TestToUpper();
 
     return 0;
