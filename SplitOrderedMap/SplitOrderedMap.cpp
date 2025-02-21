@@ -3,6 +3,8 @@
 #include <memory>
 #include <functional>
 #include <iostream>
+#include <mutex>
+#include <optional>
 
 template <typename Key, typename Value>
 class SplitOrderMap {
