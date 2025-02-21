@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include <limits>
 
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& arr) {
@@ -60,7 +62,7 @@ bool findmatchfast(const std::string &text, const std::string &wld) {
 	const size_t n = text.size();
 	const size_t m = wld.size();
 
-	size_t start = -1;
+	auto start = std::numeric_limits<size_t>::max();
 
 	size_t i = 0;
 	size_t j = 0;
@@ -78,7 +80,7 @@ bool findmatchfast(const std::string &text, const std::string &wld) {
 			i++;
 			start = i;
 		}
-		else if (start == -1) {
+		else if (start == std::numeric_limits<size_t>::max()) {
 			return false;
 		}
 		else {
