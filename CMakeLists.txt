@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(LearningAlgorithm)
+
+add_subdirectory(BinaryAlgorithm)
+add_subdirectory(CombinationSum)
+add_subdirectory(ExpressionEvaluator)
+add_subdirectory(KMPSearch)
+add_subdirectory(KMax)
+add_subdirectory(MinSlidingWindow)
+add_subdirectory(RateLimiter)
+add_subdirectory(RegularExpressionDynamic)
+add_subdirectory(SortingAlgorithm)
+add_subdirectory(SplitOrderedMap)
+add_subdirectory(StringAlgorithm)
+add_subdirectory(StringMultiply)
+add_subdirectory(TicTacToe)
+add_subdirectory(WildcardSearch)
+add_subdirectory(ZAlgorithm)
+

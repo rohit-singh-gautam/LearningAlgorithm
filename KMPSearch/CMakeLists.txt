@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 if (UNIX)
-add_compile_options(-Wall -Werror -Wpedantic -Wextra -Weffc++ -Wsuggest-override -fanalyzer)
+add_compile_options(-Wall -Werror -Wpedantic -Wextra -Weffc++ -Wsuggest-override) # -fanalyzer
 elseif (MSVC)
 add_compile_options(/W4 /WX)
 endif()

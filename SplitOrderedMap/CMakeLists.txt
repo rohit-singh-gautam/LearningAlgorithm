@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Project name
-project(SplitOrderedMap)
-
 # Add source files
 set(SOURCES
     SplitOrderedMap.cpp
