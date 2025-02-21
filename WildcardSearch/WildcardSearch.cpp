@@ -45,7 +45,7 @@ bool findmatch(const std::string &text, const std::string &wld) {
 }
 
 bool findmatchrecursive(const std::string &text, const std::string &wld, size_t textindex, size_t wldindex) {
-	if (textindex == -1 || wldindex == -1) return textindex == -1 && wldindex == -1;
+	if (textindex == std::numeric_limits<size_t>::max() || wldindex == std::numeric_limits<size_t>::max()) return textindex == std::numeric_limits<size_t>::max() && wldindex == std::numeric_limits<size_t>::max();
 	if (wld[wldindex] == '.') return findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
 	if (wld[wldindex] == '*') return findmatchrecursive(text, wld, textindex - 1, wldindex) || findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
 	if (text[textindex] == wld[wldindex]) return findmatchrecursive(text, wld, textindex - 1, wldindex - 1);
