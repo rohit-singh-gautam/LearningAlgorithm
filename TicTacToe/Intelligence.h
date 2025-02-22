@@ -50,7 +50,7 @@ public:
 		}
 
 		auto begin = bestMoves.begin();
-		std::uniform_int_distribution<> dis(0, std::distance(begin, bestMoves.end()) - 1);
+		std::uniform_int_distribution<> dis(0, static_cast<uint8_t>(std::distance(begin, bestMoves.end())) - 1);
 		std::advance(begin, dis(gen));
 		return *begin;
 	}
