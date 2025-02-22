@@ -15,10 +15,14 @@ public:
 
 private:
     piece board[max_row][max_col] { piece::empty };
-    size_t current_move { 0 };
+    uint8_t current_move { 0 };
 
-    static constexpr int max_score { 48 };
-    static constexpr int multiplier[] { 0, -1, 1 };
+public:
+    auto get_current_move() const { return current_move; }
+
+private:
+    static constexpr uint8_t max_score { 48 };
+    static constexpr int8_t multiplier[] { 0, -1, 1 };
     static constexpr auto get_multiplier(const piece turn) {
         return multiplier[static_cast<size_t>(turn)];
     }
@@ -28,8 +32,9 @@ private:
     }
 
 public:
+    auto get_current_piece() const { return static_cast<piece>(current_move % 2 + 1); }
 
-    bool make_move(const std::pair<size_t, size_t> &pos) {
+    auto make_move(const std::pair<size_t, size_t> &pos) {
         auto &curr_pos { board[pos.first][pos.second]};
         if (curr_pos != piece::empty) return false;
         curr_pos = get_current_piece();
@@ -41,11 +46,8 @@ public:
         board[pos.first][pos.second] = piece::empty;
         --current_move;
     }
-    
-    int get_current_move() const { return current_move; }
-    piece get_current_piece() const { return static_cast<piece>(current_move % 2 + 1); }
 
-    bool game_over() const { return get_current_move() == max_move; }
+    auto game_over() const { return get_current_move() == max_move; }
 
     piece who_is_winning() const {
         // Horizontal

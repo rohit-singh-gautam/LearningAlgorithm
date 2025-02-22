@@ -26,13 +26,13 @@ std::ostream& operator<<(std::ostream& o, const piece p) {
 }
 
 struct move {
-	move() : row(0), col(0) {}
-	move(const move& m) : row(m.row), col(m.col) {}
-	move(int row, int col) : row(row), col(col) {}
-	int row;
-	int col;
+	move() : row { 0 }, col { 0 } {}
+	move(const move& m) : row { m.row }, col { m.col } {}
+	move(const std::integral auto row, const std::integral auto col) : row { static_cast<uint8_t>(row) }, col { static_cast<uint8_t>(col) } {}
+	uint8_t row;
+	uint8_t col;
 
-	move& operator=(const move& m) {
+	auto& operator=(const move& m) {
 		row = m.row;
 		col = m.col;
 		return *this;
@@ -54,7 +54,7 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& a) {
 	if (len == 0) {
 		return o << "Empty";
 	}
-	for (std::decay_t<decltype(len)> i{ 0 }; i < len - 1; ++i) {
+	for (std::decay_t<decltype(len)> i { 0 }; i < len - 1; ++i) {
 		o << a[i] << ' ';
 	}
 
@@ -63,8 +63,8 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& a) {
 
 class Board {
 public:
-	static constexpr size_t rowcount = 3;
-	static constexpr size_t colcount = 3;
+	static constexpr uint8_t rowcount { 3 };
+	static constexpr uint8_t colcount { 3 };
 
 private:
 	union {
@@ -72,13 +72,13 @@ private:
 		piece flat[rowcount * colcount];
 		uint64_t value[2];
 	};
-	int count;
+	uint8_t count;
 
 public:
-	Board() : value { 0, 0 }, count(0) {}
+	Board() : value { 0, 0 }, count { 0 } {}
 
-	Board(const std::string &boardcode) : value { 0, 0 }, count(0) {
-		for(int index = 0; index < boardcode.size(); ++index) {
+	Board(const std::string &boardcode) : value { 0, 0 }, count { 0 } {
+		for(decltype(boardcode.size()) index { 0 }; index < boardcode.size(); ++index) {
 			const auto ch {boardcode[index]};
 			const auto current_piece {
 				(!!(ch == 'x' or ch == 'X')) +
@@ -94,14 +94,18 @@ public:
 		count = 0;
 	}
 
-	piece getCurrentPiece() const {
+	auto getCurrentPiece() const {
 		if (count == 9) return piece::none;
 
 		if (count % 2 == 0) return piece::first;
 		else return piece::second;
 	}
 
-	bool makeMove(const move& m) {
+	auto getCount() const {
+		return count;
+	}
+
+	auto makeMove(const move& m) {
 		if (m.row < 0 || m.row >= rowcount || m.col < 0 || m.col >= colcount
 			|| getCount() == 9 || store[m.row][m.col] != piece::none) {
 			return false;
@@ -112,7 +116,7 @@ public:
 		return true;
 	}
 
-	bool undo(const move &m) {
+	auto undo(const move &m) {
 		if (m.row < 0 || m.row >= rowcount || m.col < 0 || m.col >= colcount || store[m.row][m.col] == piece::none) {
 			return false;
 		}
@@ -122,18 +126,14 @@ public:
 		return true;
 	}
 
-	int getCount() const {
-		return count;
-	}
-
-	uint64_t getValue(std::integral auto index) const {
+	auto getValue(std::integral auto index) const {
 		return value[index];
 	}
 
-	std::vector<move> getAllMove() const {
-		std::vector<move> moves;
-		for (int row = 0; row < rowcount; row++) {
-			for (int col = 0; col < colcount; col++) {
+	auto getAllMove() const {
+		std::vector<move> moves { };
+		for (std::decay_t<decltype(rowcount)> row { 0 }; row < rowcount; row++) {
+			for (std::decay_t<decltype(colcount)> col { 0 }; col < colcount; col++) {
 				if (store[row][col] == piece::none) {
 					moves.push_back(move(row, col));
 				}
@@ -147,7 +147,7 @@ public:
 		return store[m.row][m.col];
 	}
 
-	piece who_is_winning() const {
+	auto who_is_winning() const {
 		const auto value {getValue(0)};
 		const auto value_high {getValue(1)};
 
@@ -181,9 +181,9 @@ public:
 
 std::ostream& operator<<(std::ostream& o, const Board& board) {
 	o << "#########" << std::endl;
-	for (int row = 0; row < Board::rowcount; row++) {
+	for (std::decay_t<decltype(Board::rowcount)> row { 0 }; row < Board::rowcount; row++) {
 		o << '#';
-		for (int col = 0; col < Board::colcount; col++) {
+		for (std::decay_t<decltype(Board::rowcount)> col { 0 }; col < Board::colcount; col++) {
 			o << ' ' << board[move(row, col)];
 		}
 		o << " #" << std::endl;

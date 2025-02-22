@@ -9,10 +9,10 @@ class Evaluator {
 public:
 	Evaluator(const Board& board) : board(board) {}
 
-	int score() const {
-		int moveScoreSecond = 10 - board.getCount();
-		int moveScoreFirst = -moveScoreSecond;
-		auto winning { board.who_is_winning() };
+	auto score() const {
+		const auto moveScoreSecond = 10 - board.getCount();
+		const auto moveScoreFirst = -moveScoreSecond;
+		const auto winning { board.who_is_winning() };
 		return moveScoreFirst * (winning == piece::first) + moveScoreSecond * (winning == piece::second);
 	}
 };

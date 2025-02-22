@@ -7,8 +7,8 @@ void test() {
 	ttt engine;
 
 	while (!engine.game_over()) {
-		int row;
-		int col;
+		int row { };
+		int col { };
 
 		while(true) {
 			std::cout << engine;
@@ -54,7 +54,7 @@ void boardtest() {
 	for(auto &board: boards) {
 		Evaluator evaluator { board };
 		std::cout << board;
-		int score = evaluator.score();
+		auto score = evaluator.score();
 		if (score < 0) std::cout << "First winning\n";
 		else if (score > 0) std::cout << "Second winning\n";
 		std::cout << std::endl;
@@ -63,8 +63,8 @@ void boardtest() {
 }
 
 int main(int argc, char* argv[]) {
-	test<tictactoe>();
-	//test<TicTacToeEngine>();
+	//test<tictactoe>();
+	test<TicTacToeEngine>();
 	//boardtest();
 
 	return 0;

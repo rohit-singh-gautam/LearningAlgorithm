@@ -22,10 +22,10 @@ public:
 			std::numeric_limits<int>::max() : std::numeric_limits<int>::min();
 		const auto allMoves = board.getAllMove();
 
-		std::vector<move> bestMoves;
+		std::vector<move> bestMoves { };
 
 		for (const auto& m : allMoves) {
-			if (!board.makeMove(m)) continue;
+			if (!board.makeMove(m)) throw "Move must work";
 			int score = minmax();
 			if (!board.undo(m)) throw "Undo must work";
 
