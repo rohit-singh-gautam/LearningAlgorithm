@@ -4,7 +4,7 @@ project(LearningAlgorithm)
 
 add_subdirectory(BinaryAlgorithm)
 add_subdirectory(CombinationSum)
-add_subdirectory(ExpressionEvaluator)
+add_subdirectory(Parser)
 add_subdirectory(KMPSearch)
 add_subdirectory(KMax)
 add_subdirectory(MinSlidingWindow)
