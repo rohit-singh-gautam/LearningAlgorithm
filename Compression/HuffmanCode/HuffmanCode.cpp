@@ -57,7 +57,7 @@ void CreateHuffmanCode(const std::string &str) {
         }
     }
 
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     while(priority.size() != 1) {
         node *left;
         node *right;

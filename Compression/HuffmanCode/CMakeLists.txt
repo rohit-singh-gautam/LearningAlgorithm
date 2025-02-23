@@ -8,4 +8,4 @@ endif()
 
 add_executable(HuffmanCode HuffmanCode.cpp)
 
-target_compile_features(HuffmanCode PRIVATE cxx_std_20)
+target_compile_features(HuffmanCode PRIVATE cxx_std_14)

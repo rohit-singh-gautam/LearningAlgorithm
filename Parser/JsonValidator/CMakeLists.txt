@@ -8,4 +8,4 @@ endif()
 
 add_executable(JsonValidator JsonValidator.cpp)
 
-target_compile_features(JsonValidator PRIVATE cxx_std_14)
+target_compile_features(JsonValidator PRIVATE cxx_std_17)
