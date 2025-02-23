@@ -6,7 +6,9 @@
 // Expression: E -> T + E | T - E | T
 // Term: T -> V * T | V / T | V
 // Value: V -> ( E ) | S
-// Sign Number: S -> + S | - S | D
+// Sign Number: S -> + F | - F | F
+// Float: F -> I "." I
+// I: I -> D I | D
 // Digit: D -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 #include <string>
@@ -20,7 +22,7 @@ void SkipWhiteSpace(std::string::const_iterator &it, const std::string::const_it
     }
 }
 
-int Digit(std::string::const_iterator &it, const std::string::const_iterator &end) {
+int Integer(std::string::const_iterator &it, const std::string::const_iterator &end) {
     int result { 0 };
     while(it != end && *it >= '0' && *it <= '9') {
         result = result * 10 + *it - '0';
@@ -29,12 +31,27 @@ int Digit(std::string::const_iterator &it, const std::string::const_iterator &en
     return result;
 }
 
-int SignedNumber(std::string::const_iterator &it, const std::string::const_iterator &end) {
+double Float(std::string::const_iterator &it, const std::string::const_iterator &end) {
+    auto integer = Integer(it, end);
+    if (it == end || *it != '.') return integer;
+    it = std::next(it);
+    auto decimal = Integer(it, end);
+    double result { 0 };
+    while(decimal) {
+        result += decimal % 10;
+        result /= 10;
+        decimal /= 10;
+    }
+    result += integer;
+    return result;
+}
+
+double SignedNumber(std::string::const_iterator &it, const std::string::const_iterator &end) {
     if (it == end) {
         throw std::runtime_error { "Expecting sign or number" };
     }
 
-    int sign { 1 };
+    double sign { 1 };
     if (*it == '-') {
         sign = -1;
         it = std::next(it);
@@ -46,12 +63,12 @@ int SignedNumber(std::string::const_iterator &it, const std::string::const_itera
         throw std::runtime_error { "Expecting number" };
     }
 
-    return Digit(it, end) * sign;
+    return Float(it, end) * sign;
 }
 
-int Expression(std::string::const_iterator &it, const std::string::const_iterator &end);
+double Expression(std::string::const_iterator &it, const std::string::const_iterator &end);
 
-int Value(std::string::const_iterator &it, const std::string::const_iterator &end) {
+double Value(std::string::const_iterator &it, const std::string::const_iterator &end) {
     if (it == end) {
         throw std::runtime_error { "Expecting sign or number or expression" };
     }
@@ -70,14 +87,14 @@ int Value(std::string::const_iterator &it, const std::string::const_iterator &en
     return SignedNumber(it, end);
 }
 
-int Term(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    int result = Value(it, end);
+double Term(std::string::const_iterator &it, const std::string::const_iterator &end) {
+    double result = Value(it, end);
     SkipWhiteSpace(it, end);
     while(it != end) {
         auto ch = *it;
         if (ch != '*' && ch != '/') break;
         it = std::next(it);
-        int rhs = Value(it, end);
+        double rhs = Value(it, end);
         SkipWhiteSpace(it, end);
         if (ch == '*') result *= rhs;
         else if (ch == '/') result /= rhs;
@@ -85,14 +102,14 @@ int Term(std::string::const_iterator &it, const std::string::const_iterator &end
     return result;
 }
 
-int Expression(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    int result = Term(it, end);
+double Expression(std::string::const_iterator &it, const std::string::const_iterator &end) {
+    double result = Term(it, end);
     SkipWhiteSpace(it, end);
     while(it != end) {
         auto ch = *it;
         if (ch != '+' && ch != '-') break;
         it = std::next(it);
-        int rhs = Term(it, end);
+        double rhs = Term(it, end);
         SkipWhiteSpace(it, end);
         if (ch == '+') result += rhs;
         else if (ch == '-') result -= rhs;
@@ -102,8 +119,9 @@ int Expression(std::string::const_iterator &it, const std::string::const_iterato
 
 
 int main(int, char *[]) {
-    const std::vector<std::pair<std::string, int>> testlist {
-        {"(1+1)", 2},
+    const std::vector<std::pair<std::string, double>> testlist {
+        {"223344.987654321", 223344.987654321},
+        {"(1+1.1)", 2.1},
         {"1+1", 2},
         {" 1 + 1 ", 2},
         {"  (  1  +  1 ) ", 2},
@@ -112,7 +130,7 @@ int main(int, char *[]) {
         {"1", 1},
         {"223344", 223344},
         {"(20 + 20) * (30 + 30)", 2400},
-        {"((20 + 20) * (30 + 30)) * 2", 4800}
+        {"((20 + 20) * (30 + 30)) * 2.1", 5040},
     };
     
     for(const auto &[expr, expected]: testlist) {
