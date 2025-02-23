@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -13,10 +14,6 @@ class CombinationSum {
 	vector<int> a;
 	const size_t sum;
 	size_t csum { 0 };
-public:
-	CombinationSum(const vector<int>& input, int sum) : a(input), sum(sum) {
-		sort(a.begin(), a.end());
-	};
 
 	void Calculate(size_t start) {
 		if (start >= a.size()) {
@@ -33,8 +30,9 @@ public:
 		csum -= a[start];
 		res.pop_back();
 
-		if (csum + a[start] < sum)
+		if (csum + a[start] < sum) {
 			Calculate(start + 1);
+		}
 	}
 
 	void CalculateUnique(size_t start) {
@@ -60,6 +58,14 @@ public:
 			}
 		}
 	}
+
+public:
+	CombinationSum(const vector<int>& input, int sum) : a(input), sum(sum) {
+		sort(a.begin(), a.end());
+	};
+
+	void Calculate() { Calculate(0); }
+	void CalculateUnique() { CalculateUnique(0); }
 
 	vector<vector<int>> GetAns() {
 		return ans;
@@ -116,15 +122,36 @@ int main()
 		{ { 2, 3, 6, 7 }, 17 },
 		{ { 2, 3, 6, 7 }, 18 },
 		{ { 2, 3, 6, 7 }, 19 },
-		{ { 10,1,2,7,6,1,5 }, 8 }
+		{ { 10,1,2,7,6,1,5 }, 1 },
+		{ { 10,1,2,7,6,1,5 }, 2 },
+		{ { 10,1,2,7,6,1,5 }, 3 },
+		{ { 10,1,2,7,6,1,5 }, 4 },
+		{ { 10,1,2,7,6,1,5 }, 5 },
+		{ { 10,1,2,7,6,1,5 }, 6 },
+		{ { 10,1,2,7,6,1,5 }, 7 },
+		{ { 10,1,2,7,6,1,5 }, 8 },
+		{ { 10,1,2,7,6,1,5 }, 9 },
+		{ { 10,1,2,7,6,1,5 }, 10 },
+		{ { 10,1,2,7,6,1,5 }, 11 },
+		{ { 10,1,2,7,6,1,5 }, 12 },
+		{ { 10,1,2,7,6,1,5 }, 13 },
+		{ { 10,1,2,7,6,1,5 }, 14 },
+		{ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 5 },
 	};
 
 	for (auto &[array, sum]: tests) {
 		std::cout << "Test: " << array << " Sum: " << sum << std::endl;
 		CombinationSum cmbsum(array, sum);
-		cmbsum.Calculate(0);
+		cmbsum.CalculateUnique();
 		vector<vector<int>> ans = cmbsum.GetAns();
 		std::cout << "Ans: " << ans << std::endl;
+		for(const auto &oneans: ans) {
+			auto total = std::accumulate(std::begin(oneans), std::end(oneans), 0);
+			if (total != sum) {
+				std::cout << "Failed for Array: " << oneans << "; got: " << total << ", expected: " << sum << std::endl;
+				return 0;
+			}
+		}
 	}
 
     return 0;
