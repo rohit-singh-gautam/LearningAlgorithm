@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <filesystem>
 
 struct node {
     char c;
@@ -81,7 +82,8 @@ void CreateHuffmanCode(const std::string &str) {
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        std::cout << "huffmancode: <string>" << std::endl;
+        std::filesystem::path path { argv[0] };
+        std::cout << path.filename() << ": <string>" << std::endl;
     } else {
         CreateHuffmanCode(argv[1]);
     }
