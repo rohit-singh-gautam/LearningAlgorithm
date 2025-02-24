@@ -27,13 +27,22 @@ struct node {
         delete(right); right = nullptr;
     }
 
-    void traverse(const std::string &code = "") {
+    void traverse(std::string code) {
         if (left == nullptr) {
             std::cout << c << ":" << frequency << ": " << code << std::endl;
         } else {
-            left->traverse(code + '0');
-            right->traverse(code + '1');
+            code.push_back('0');
+            left->traverse(code);
+            code.pop_back();
+            code.push_back('1');
+            right->traverse(code);
+            code.pop_back();
         }
+    }
+
+    void traverse() {
+        std::string code { };
+        traverse(code);
     }
 
     constexpr bool operator<(const node &rhs) { return frequency < rhs.frequency; }
@@ -80,10 +89,24 @@ void CreateHuffmanCode(const std::string &str) {
     priority.top()->traverse();
 }
 
+void test() {
+    std::vector<std::string> testlist {
+        "This is a test that will make sure that proper huffman code is created. To create proper huffman code there must be sufficient large string, that must contain large number of character that is repeater several time. Huffman code consist of minimum number of bits for most repeated character and maximum number of bits for most repeated character. From normal look it is clear that space is very much repeated, other puncuation is also repeated a lot. So, space and puncuation must have minimum number of bits. Other character must have maximum number of bits. This is a test that will make sure that proper huffman code is created. To create proper huffman code there must be sufficient large string, that must contain large number of character that is repeater several time. Huffman code consist of minimum number of bits for most repeated character and maximum number of bits for most repeated character. From normal look it is clear that space is very much repeated, other puncuation is also repeated a lot. So, space and puncuation must have minimum number of bits. Other character must have maximum number of bits.",
+        "This is a test"
+    };
+
+    for(auto &str: testlist) {
+        std::cout << "Test: " << str << std::endl;
+        CreateHuffmanCode(str);
+        std::cout << std::endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::filesystem::path path { argv[0] };
         std::cout << path.filename() << ": <string>" << std::endl;
+        test();
     } else {
         CreateHuffmanCode(argv[1]);
     }
