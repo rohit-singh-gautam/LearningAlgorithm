@@ -15,108 +15,122 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <iterator>
+#include <ranges>
 
-void SkipWhiteSpace(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    while(it != end && (*it == ' ' || *it == '\t' || *it == '\r' || *it == '\n')) {
-        it = std::next(it);
-    }
-}
+template <std::forward_iterator It>
+class ExpressionEvaluator {
+    It it;
+    const It end;
 
-int Integer(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    int result { 0 };
-    while(it != end && *it >= '0' && *it <= '9') {
-        result = result * 10 + *it - '0';
-        it = std::next(it);
-    }
-    return result;
-}
-
-double Float(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    auto integer = Integer(it, end);
-    if (it == end || *it != '.') return integer;
-    it = std::next(it);
-    auto decimal = Integer(it, end);
-    double result { 0 };
-    while(decimal) {
-        result += decimal % 10;
-        result /= 10;
-        decimal /= 10;
-    }
-    result += integer;
-    return result;
-}
-
-double SignedNumber(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    if (it == end) {
-        throw std::runtime_error { "Expecting sign or number" };
-    }
-
-    double sign { 1 };
-    if (*it == '-') {
-        sign = -1;
-        it = std::next(it);
-    } else if (*it == '+') {
-        it = std::next(it);
-    }
-    
-    if (it == end || *it < '0' || *it > '9') {
-        throw std::runtime_error { "Expecting number" };
-    }
-
-    return Float(it, end) * sign;
-}
-
-double Expression(std::string::const_iterator &it, const std::string::const_iterator &end);
-
-double Value(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    if (it == end) {
-        throw std::runtime_error { "Expecting sign or number or expression" };
-    }
-    SkipWhiteSpace(it, end);
-    if (*it == '(') {
-        it = std::next(it);
-        SkipWhiteSpace(it, end);
-        auto result = Expression(it, end);
-        SkipWhiteSpace(it, end);
-        if (*it != ')') {
-            throw std::runtime_error { "Expecting )" };
+    constexpr void SkipWhiteSpace() {
+        while(it != end && (*it == ' ' || *it == '\t' || *it == '\r' || *it == '\n')) {
+            it = std::next(it);
         }
-        it = std::next(it);
+    }
+
+    constexpr auto Integer() {
+        int result { 0 };
+        while(it != end && *it >= '0' && *it <= '9') {
+            result = result * 10 + *it - '0';
+            it = std::next(it);
+        }
         return result;
     }
-    return SignedNumber(it, end);
-}
 
-double Term(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    double result = Value(it, end);
-    SkipWhiteSpace(it, end);
-    while(it != end) {
-        auto ch = *it;
-        if (ch != '*' && ch != '/') break;
+    constexpr double Float() {
+        auto integer = Integer();
+        if (it == end || *it != '.') return integer;
         it = std::next(it);
-        double rhs = Value(it, end);
-        SkipWhiteSpace(it, end);
-        if (ch == '*') result *= rhs;
-        else if (ch == '/') result /= rhs;
+        auto decimal = Integer();
+        double result { 0 };
+        while(decimal) {
+            result += decimal % 10;
+            result /= 10;
+            decimal /= 10;
+        }
+        result += integer;
+        return result;
     }
-    return result;
-}
 
-double Expression(std::string::const_iterator &it, const std::string::const_iterator &end) {
-    double result = Term(it, end);
-    SkipWhiteSpace(it, end);
-    while(it != end) {
-        auto ch = *it;
-        if (ch != '+' && ch != '-') break;
-        it = std::next(it);
-        double rhs = Term(it, end);
-        SkipWhiteSpace(it, end);
-        if (ch == '+') result += rhs;
-        else if (ch == '-') result -= rhs;
+    constexpr auto SignedNumber() {
+        if (it == end) {
+            throw std::runtime_error { "Expecting sign or number" };
+        }
+    
+        double sign { 1 };
+        if (*it == '-') {
+            sign = -1;
+            it = std::next(it);
+        } else if (*it == '+') {
+            it = std::next(it);
+        }
+        
+        if (it == end || *it < '0' || *it > '9') {
+            throw std::runtime_error { "Expecting number" };
+        }
+    
+        return Float() * sign;
     }
-    return result;
-}
 
+    constexpr auto Value() {
+        if (it == end) {
+            throw std::runtime_error { "Expecting sign or number or expression" };
+        }
+        SkipWhiteSpace();
+        if (*it == '(') {
+            it = std::next(it);
+            SkipWhiteSpace();
+            auto result = Expression();
+            SkipWhiteSpace();
+            if (*it != ')') {
+                throw std::runtime_error { "Expecting )" };
+            }
+            it = std::next(it);
+            return result;
+        }
+        return SignedNumber();
+    }
+
+    constexpr auto Term() {
+        auto result = Value();
+        SkipWhiteSpace();
+        while(it != end) {
+            auto ch = *it;
+            if (ch != '*' && ch != '/') break;
+            it = std::next(it);
+            auto rhs = Value();
+            SkipWhiteSpace();
+            if (ch == '*') result *= rhs;
+            else if (ch == '/') result /= rhs;
+        }
+        return result;
+    }
+    
+    constexpr double Expression() {
+        auto result = Term();
+        SkipWhiteSpace();
+        while(it != end) {
+            auto ch = *it;
+            if (ch != '+' && ch != '-') break;
+            it = std::next(it);
+            auto rhs = Term();
+            SkipWhiteSpace();
+            if (ch == '+') result += rhs;
+            else if (ch == '-') result -= rhs;
+        }
+        return result;
+    }
+
+public:
+    constexpr ExpressionEvaluator(It begin, It end): it { begin }, end { end } {}
+    double Evaluate() {
+        return Expression();
+    }
+}; // ExpressionEvaluator
+
+template <std::ranges::range range>
+constexpr auto MakeEvaluator(const range &r) { return ExpressionEvaluator { std::begin(r), { std::end(r) } }; }
 
 int main(int, char *[]) {
     const std::vector<std::pair<std::string, double>> testlist {
@@ -134,8 +148,8 @@ int main(int, char *[]) {
     };
     
     for(const auto &[expr, expected]: testlist) {
-        auto itr = std::begin(expr);
-        auto result = Expression(itr, std::end(expr));
+        auto evaluator = MakeEvaluator(expr);
+        auto result = evaluator.Evaluate();
         std::cout << expr << " = " << result << ", expected: " << expected << std::endl;
         if (result != expected) {
             std::cout << "Test failed\n";
