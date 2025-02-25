@@ -70,7 +70,7 @@ inline auto CreateLZWUncompressDictionay() {
 }
 
 template <typename OutType = uint32_t>
-std::vector<OutType> LzwCompress(std::forward_iterator auto it, const std::forward_iterator auto end) {
+auto LzwCompress(std::forward_iterator auto it, const std::forward_iterator auto end) {
     std::vector<OutType> compressedData { };
     if (it == end) return compressedData;
     auto dictionary = CreateLZWCompressDictionay<OutType>();
@@ -81,7 +81,7 @@ std::vector<OutType> LzwCompress(std::forward_iterator auto it, const std::forwa
         if (dictionary.contains(nextPattern)) {
             currentPattern = nextPattern;
         } else {
-            auto dictionarySize = dictionary.size();
+            auto dictionarySize = static_cast<OutType>(dictionary.size());
             dictionary.emplace(nextPattern, dictionarySize);
             compressedData.push_back(dictionary.at(currentPattern));
             currentPattern = std::string { static_cast<char>(*it) };
@@ -94,7 +94,7 @@ std::vector<OutType> LzwCompress(std::forward_iterator auto it, const std::forwa
 }
 
 template <typename OutType = uint32_t>
-std::vector<OutType> LzwCompress(const std::ranges::range auto &data) {
+auto LzwCompress(const std::ranges::range auto &data) {
     return LzwCompress<OutType>(std::begin(data), std::end(data));
 }
 
@@ -109,7 +109,7 @@ auto LZWUncompress(std::forward_iterator auto it, const std::forward_iterator au
     it = std::next(it);
     while(it != end) {
         auto dictionaryIterator = dictionary.find(*it);
-        auto dictionarySize = dictionary.size();
+        auto dictionarySize = static_cast<InType>(dictionary.size());
         if (dictionaryIterator != std::end(dictionary)) {
             auto currentData = dictionaryIterator->second;
             uncompressData += currentData;
