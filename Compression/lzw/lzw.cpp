@@ -40,7 +40,7 @@ std::ostream &operator<<(std::ostream &os, const std::pair<T1, T2> &data) {
 }
 
 template <typename KeyT, typename ValueT>
-using MapType = std::map<KeyT, ValueT>;
+using MapType = std::unordered_map<KeyT, ValueT>;
 
 template <typename T1, typename T2>
 std::ostream &operator<<(std::ostream &os, const MapType<T1, T2> &data) {
