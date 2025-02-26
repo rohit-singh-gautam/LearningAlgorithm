@@ -60,11 +60,10 @@ inline auto CreateLZWCompressDictionay() {
     return dictionary;
 }
 
-template <typename InType>
 inline auto CreateLZWUncompressDictionay() {
-    MapType<InType, std::string> dictionary { };
-    for(InType asciiCode { 0 }; asciiCode <= 255; ++asciiCode) {
-        dictionary.emplace( asciiCode, std::string { static_cast<char>(asciiCode) } );
+    std::vector<std::string> dictionary { };
+    for(int asciiCode { 0 }; asciiCode <= 255; ++asciiCode) {
+        dictionary.emplace_back( std::string { static_cast<char>(asciiCode) } );
     }
     return dictionary;
 }
@@ -101,24 +100,24 @@ auto LzwCompress(const std::ranges::range auto &data) {
 auto LZWUncompress(std::forward_iterator auto it, const std::forward_iterator auto end) {
     using InType = std::decay_t<decltype(*it)>;
     if (it == end) return std::string { };
-    auto dictionary = CreateLZWUncompressDictionay<InType>();
+    auto dictionary = CreateLZWUncompressDictionay();
 
     auto previousData = dictionary[*it];
     std::string uncompressData = previousData;
 
     it = std::next(it);
     while(it != end) {
-        auto dictionaryIterator = dictionary.find(*it);
+        auto currentIndex = *it;
         auto dictionarySize = static_cast<InType>(dictionary.size());
-        if (dictionaryIterator != std::end(dictionary)) {
-            auto currentData = dictionaryIterator->second;
+        if (currentIndex < dictionarySize) {
+            auto currentData = dictionary.at(currentIndex);
             uncompressData += currentData;
-            dictionary.emplace(dictionarySize, previousData + currentData[0]);
+            dictionary.emplace_back(previousData + currentData.front());
             previousData = currentData;
-        } else if (*it == dictionarySize) {
-            previousData = previousData + previousData[0];
+        } else if (currentIndex == dictionarySize) {
+            previousData = previousData + previousData.front();
             uncompressData += previousData;
-            dictionary.emplace(dictionarySize, previousData);
+            dictionary.emplace_back(previousData);
         } else {
             throw std::runtime_error { "Bad input compressed data" };
         }
