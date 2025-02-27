@@ -9,7 +9,7 @@
 
 // +   x a * b c f
 //   t f f f f f f
-// x f t f t f f f
+// x f t f f f f f
 // a f f t t f f f // previous pattern char = current text char
 // a f f f t f f f 
 // a f f f t f f f
