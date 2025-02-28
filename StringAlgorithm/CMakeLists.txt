@@ -8,4 +8,5 @@ endif()
 
 add_subdirectory(CaseChange)
 add_subdirectory(LargestPalindrom)
+add_subdirectory(StringMultiply)
 
