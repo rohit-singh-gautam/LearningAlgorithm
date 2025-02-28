@@ -4,6 +4,7 @@ project(LearningAlgorithm)
 
 add_subdirectory(BinaryAlgorithm)
 add_subdirectory(CombinationSum)
+add_subdirectory(Maths)
 add_subdirectory(Parser)
 add_subdirectory(Pattern)
 add_subdirectory(Compression)
