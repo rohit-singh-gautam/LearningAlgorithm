@@ -144,18 +144,21 @@ size_t LzwCompressSize(const std::ranges::range auto &compressData) {
     return size;
 }
 
-bool test(const std::string &input) {
+bool test(const std::string &input, bool display = true) {
     auto compressed = LzwCompress(input);
     auto uncompressed = LzwUncompress(compressed);
-    std::cout << "Input: " << input << std::endl;
-    std::cout << "Compressed: " << compressed << std::endl;
-    std::cout << "Uncompressed: " << uncompressed << std::endl;
+    if (display) {
+        std::cout << "Input: " << input << std::endl;
+        std::cout << "Compressed: " << compressed << std::endl;
+        std::cout << "Uncompressed: " << uncompressed << std::endl;
+    }
     std::cout << "Input Size: " << input.size() << " Compressed Size: " << LzwCompressSize(compressed) << " Compressed vector Count: " << compressed.size() << std::endl;
     return input == uncompressed;
 }
 
 int main(int, char *[]) {
     const std::vector<std::string> testlist {
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "ABABC",
         "ABABABABABABABABABAB",
         "TOBEORNOTTOBEORTOBEORNOT",
@@ -224,9 +227,13 @@ int main(int, char *[]) {
         "This is a test string for LZW",
         "This is a test string for LZW compression",
         "This is a test string for LZW compression algorithm",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     };
+
     
+    std::string bigString { };
     for(const auto &testentry: testlist) {
+        bigString += testentry;
         auto result = test(testentry);
         if (!result) {
             std::cout << "Test failed" << std::endl;
@@ -234,6 +241,18 @@ int main(int, char *[]) {
         }
         std::cout << std::endl;
     }
+
+    bigString += bigString;
+    bigString += bigString;
+    bigString += bigString;
+    bigString += bigString;
+    bigString += bigString;
+
+    auto result1 = test(bigString, false);
+    if (!result1) {
+        std::cout << "Test failed" << std::endl;
+    }
+    std::cout << std::endl;
 
     return 0;
 }
