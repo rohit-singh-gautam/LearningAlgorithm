@@ -1,15 +1,10 @@
-// LargestPalindrom.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-// PalindromAlgorithm.cpp : Defines the entry point for the console application.
-//
-
 #include <string>
 #include <vector>
 #include <tuple>
 #include <iostream>
 #include <limits>
 
-// Best working code
+// Manacher's Algorithm
 auto LongestPallindromeSubstring(const std::string &text) {
     size_t max_size = 1;
     size_t max_center = 0;
@@ -55,8 +50,6 @@ auto LongestPallindromeSubstring(const std::string &text) {
 
     return std::pair { max_center, max_size };
 }
-
-
 
 int main()
 {
