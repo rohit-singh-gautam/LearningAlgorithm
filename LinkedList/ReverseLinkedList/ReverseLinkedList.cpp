@@ -44,6 +44,18 @@ LinkedList<ValueType> *ReverseStack(LinkedList<ValueType> *head) {
 }
 
 template <typename ValueType>
+LinkedList<ValueType> *Reverse(LinkedList<ValueType> *currentList) {
+    LinkedList<ValueType> *previousList { nullptr };
+    while(currentList) {
+        auto next = currentList->next;
+        currentList->next = previousList;
+        previousList = currentList;
+        currentList = next;
+    }
+    return previousList;
+}
+
+template <typename ValueType>
 LinkedList<ValueType> *CreateLinkedList(const std::vector<ValueType> &test) {
     auto iterator = std::begin(test);
     const auto end = std::end(test);
@@ -123,6 +135,19 @@ bool TestStack(const std::vector<ValueType> &test) {
     return true;
 }
 
+template <typename ValueType>
+bool TestSimple(const std::vector<ValueType> &test) {
+    auto head = CreateLinkedList(test);
+    auto reversed = Reverse(head);
+    std::cout << "Reversed " << reversed << std::endl;
+    if (!CheckReversed(test, reversed)) {
+        std::cout << "Failed test\n";
+        return false;
+    }
+    DeleteLinkedList(head);
+    return true;
+}
+
 int main(int, char *[]) {
     std::vector<std::vector<int>> testlist {
         {1, 2, 3, 4, 5, 6, 7, 8},
@@ -138,6 +163,7 @@ int main(int, char *[]) {
         std::cout << "Original " << test << std::endl;
         if (!TestRecursive(test)) break;
         if (!TestStack(test)) break;
+        if (!TestSimple(test)) break;
     }
 
     return 0;
