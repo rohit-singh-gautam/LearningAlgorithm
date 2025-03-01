@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(LearningAlgorithm)
 
+add_subdirectory(LinkedList)
 add_subdirectory(BinaryAlgorithm)
 add_subdirectory(CombinationSum)
 add_subdirectory(Maths)
