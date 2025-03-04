@@ -9,7 +9,7 @@ consteval T Mask() {
         if (LSBZero) {
             return 0;
         }
-        return ~T(0);
+        return static_cast<T>(~T(0));
     } else {
         T firstMask = 0;
         for (size_t i = 0; i < PairCount; ++i) {
