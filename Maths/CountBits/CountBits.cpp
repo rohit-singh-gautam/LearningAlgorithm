@@ -5,32 +5,22 @@
 template <typename T, size_t PairCount, bool LSBZero>
 consteval T Mask() {
     constexpr size_t totalBits = sizeof(T) * 8;
-    if constexpr (PairCount == totalBits) {
+    if constexpr (PairCount >= totalBits) {
         if (LSBZero) {
             return 0;
         }
         return ~T(0);
     } else {
-        T firstMask = 0;
-        for (size_t i = 0; i < PairCount; ++i) {
-            firstMask <<= 1;
-            firstMask |= 1;
+        T mask { 0 };
+        T bit = LSBZero ? 0 : 1;
+        size_t count { 0 };
+        while(count < totalBits) {
+            for(size_t index { 0 }; index < PairCount && count < totalBits; ++index, ++count) {
+                mask |= bit << count;
+            }
+            bit = !bit;
         }
-
-        size_t currentBits = 0;
-        if (LSBZero) {
-            firstMask <<= PairCount;
-            currentBits = PairCount;
-        }
-
-        T result { 0 };
-        while(currentBits < totalBits) {
-            result |= firstMask;
-            firstMask <<= PairCount;
-            firstMask <<= PairCount;
-            currentBits += PairCount * 2;
-        }
-        return result;
+        return mask;
     }
 }
 
