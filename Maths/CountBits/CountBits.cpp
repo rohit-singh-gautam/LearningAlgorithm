@@ -12,13 +12,17 @@ consteval T Mask() {
         return static_cast<T>(~T(0));
     } else {
         T mask { 0 };
-        T bit = LSBZero ? 0 : 1;
-        size_t count { 0 };
-        while(count < totalBits) {
-            for(size_t index { 0 }; index < PairCount && count < totalBits; ++index, ++count) {
-                mask |= bit << count;
-            }
-            bit = !bit;
+        T currentBit { 1 };
+        for(size_t i = 0; i < PairCount - 1; ++i) {
+            currentBit <<= 1;
+            currentBit |= 1;
+        }
+
+        if (LSBZero) currentBit <<= PairCount;
+        while(currentBit) {
+            mask |= currentBit;
+            currentBit <<= PairCount;
+            currentBit <<= PairCount;
         }
         return mask;
     }
@@ -214,6 +218,5 @@ void TestCountBitsAll() {
 
 int main(int, char *[]) {
     TestCountBitsAll();
-    std::cout << "All tests passed!" << std::endl;
     return 0;
 }
