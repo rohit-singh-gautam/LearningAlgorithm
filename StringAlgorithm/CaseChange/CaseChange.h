@@ -50,7 +50,7 @@ class CharHelper : public SizeToType<typesize> {
 public:
     using TYPE = SizeToType<typesize>::TYPE;
    
-    static constexpr TYPE RepeatByte(const uint8_t u8ch) {
+    static consteval TYPE RepeatByte(const uint8_t u8ch) {
         if constexpr (typesize == 1) {
             return u8ch;
         } else {
@@ -60,32 +60,32 @@ public:
         }
     }
 
-    static constexpr TYPE RepeatByte(const char ch) {
+    static consteval TYPE RepeatByte(const char ch) {
         const auto u8ch = static_cast<uint8_t>(ch);
         return RepeatByte(u8ch);
     }
 
-    static constexpr TYPE Get_AboveEqual_128() {
+    static consteval TYPE Get_AboveEqual_128() {
         constexpr uint8_t value = 0x80;
         return RepeatByte(value);
     }
 
-    static constexpr TYPE Get_Above_z() {
+    static consteval TYPE Get_Above_z() {
         constexpr uint8_t value = 0x80 - 'z' - 1;
         return RepeatByte(value);
     }
 
-    static constexpr TYPE Get_AboveEqual_a() {
+    static consteval TYPE Get_AboveEqual_a() {
         constexpr uint8_t value = 0x80 - 'a';
         return RepeatByte(value);
     }
 
-    static constexpr TYPE Get_AboveEqual_A() {
+    static consteval TYPE Get_AboveEqual_A() {
         constexpr uint8_t value = 0x80 - 'A';
         return RepeatByte(value);
     }
 
-    static constexpr TYPE Get_Above_Z() {
+    static consteval TYPE Get_Above_Z() {
         constexpr uint8_t value = 0x80 - 'Z' - 1;
         return RepeatByte(value);
     }
