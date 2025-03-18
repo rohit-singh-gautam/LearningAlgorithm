@@ -111,12 +111,12 @@ auto LZWUncompress(std::forward_iterator auto it, const std::forward_iterator au
         auto dictionarySize = static_cast<InType>(dictionary.size());
         if (currentIndex < dictionarySize) {
             auto currentData = dictionary.at(currentIndex);
-            uncompressData += currentData;
+            uncompressData.append(currentData);
             dictionary.emplace_back(previousData + currentData.front());
             previousData = currentData;
         } else if (currentIndex == dictionarySize) {
-            previousData = previousData + previousData.front();
-            uncompressData += previousData;
+            previousData.push_back(previousData.front());
+            uncompressData.append(previousData);
             dictionary.emplace_back(previousData);
         } else {
             throw std::runtime_error { "Bad input compressed data" };
