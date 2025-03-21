@@ -40,7 +40,7 @@ struct move {
 };
 
 std::ostream& operator<<(std::ostream& o, const move& m) {
-	return o << '(' << m.row << ',' << m.col << ')';
+	return o << '(' << static_cast<int>(m.row) << ',' << static_cast<int>(m.col) << ')';
 }
 
 template <typename T1, typename T2>
