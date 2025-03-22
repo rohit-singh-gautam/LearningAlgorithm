@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 
 class tictactoe {
@@ -22,13 +23,9 @@ public:
 
 private:
     static constexpr uint8_t max_score { 48 };
-    static constexpr int8_t multiplier[] { 0, -1, 1 };
-    static constexpr auto get_multiplier(const piece turn) {
-        return multiplier[static_cast<size_t>(turn)];
-    }
     auto get_score() {
-        return get_multiplier(who_is_winning()) * 
-                (max_score - static_cast<int>(get_current_move()));
+        if (who_is_winning() == piece::empty) return 0;
+        return  static_cast<int>(get_current_move()) - max_score;
     }
 
 public:
@@ -76,31 +73,31 @@ public:
     std::pair<size_t, size_t> get_next_move(const int depth = 9)
     {
         const auto curr_piece { get_current_piece() };
-        int score { get_multiplier(curr_piece) * 1000 * -1 };
-        std::pair<size_t, size_t> next_pos {0, 0};
+        int score { -1000 };
+        std::vector<std::pair<size_t, size_t>> next_pos_list { };
         for(size_t row {0}; row < max_row; ++row) {
             for(size_t col {0}; col < max_col; ++col) {
                 auto &curr_pos {board[row][col]};
                 if (curr_pos == piece::empty) {
                     curr_pos = curr_piece;
                     ++current_move;
-                    const auto next_score { get_min_max(depth - 1) };
-                    if (curr_piece == piece::x) {
-                        if (next_score < score) {
-                            next_pos = {row, col};
-                            score = next_score;
-                        }
-                    } else {
-                        if (next_score > score) {
-                            next_pos = {row, col};
-                            score = next_score;
-                        }
+                    const auto next_score { -get_min_max(depth - 1) };
+                    if (next_score == score) {
+                        next_pos_list.push_back({row, col});
+                    } else if (next_score > score) {
+                        next_pos_list.clear();
+                        next_pos_list.push_back({row, col});
+                        score = next_score;
                     }
                     curr_pos = piece::empty;
                     --current_move;
                 }
             }
         }
+
+        int index = rand() % next_pos_list.size();
+        std::cout << "Size: " << next_pos_list.size() << ", index: " << index << std::endl;
+        auto next_pos = next_pos_list[index];
         return next_pos;
     }
 
@@ -110,7 +107,7 @@ public:
             return board_score;
         }
         const auto curr_piece { get_current_piece() };
-        int score { get_multiplier(curr_piece) * 1000 * -1 };
+        int score { -1000 };
         int empty_count { 0 };
         for(size_t row {0}; row < max_row; ++row) {
             for(size_t col {0}; col < max_col; ++col) {
@@ -119,9 +116,8 @@ public:
                     ++empty_count;
                     curr_pos = curr_piece;
                     ++current_move;
-                    const auto next_score { get_min_max(depth - 1) };
-                    score = curr_piece == piece::x ?
-                        std::min(score, next_score) : std::max(score, next_score);
+                    const auto next_score { -get_min_max(depth - 1) };
+                    score = std::max(score, next_score);
                     curr_pos = piece::empty;
                     --current_move;
                 }
