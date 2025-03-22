@@ -28,14 +28,11 @@ bool MakeMove(auto &engine, bool human) {
 
 template <typename ttt>
 void test(bool firstHuman, bool secondHuman) {
-	ttt engine;
-
+	ttt engine { };
 	while (true) {
 		if (MakeMove(engine, firstHuman)) break;
 		if (MakeMove(engine, secondHuman)) break;
 	}
-
-	std::cout << engine;
 }
 
 void boardtest() {
