@@ -28,6 +28,15 @@ consteval T Mask() {
     }
 }
 
+// 0b0001001001010100
+// 0b (0 + 0) (0 + 1) (0 + 0) (1  + 0) (0 + 1) (0  + 1) (0 + 1) (0 + 0)
+// 0b 00 01 00 01 01 01 01 00
+// 0b (00 + 01) (00 + 01) (01 + 01) (01 + 00)
+// 0b 0001 0001 0010 0001
+// 0b (0001 + 0001) (0010 + 0001)
+// 0b 00000010 00000011
+// 0b (00000010 + 00000011)
+// 0b 0000000000000101 = 5
 template <typename T, T bits>
 constexpr T CountBits(const T value) {
     static_assert(bits != 0);
@@ -47,6 +56,14 @@ constexpr T CountBits(const T value) {
     return CountBits<T, 1>(value);
 }
 
+
+// 0b00000000000000000000001001010100
+// if we minus 1 from the value we get
+// 0b00000000000000000000001001010011
+// Example
+// 111 - 1 = 110; 111 & 110 = 110
+// 110 - 1 = 101; 110 & 101 = 100
+// 100 - 1 = 011; 100 & 011 = 000
 template <typename T>
 constexpr T CountBits2(T value) {
     T count { 0 };
@@ -144,6 +161,7 @@ void TestCountBitsAll() {
         TestCountBits(8UL);
         TestCountBits(9UL);
         TestCountBits(10UL);
+        TestCountBits(596U);
         TestCountBits(1023U);
         TestCountBits(1024U);
         TestCountBits(1025U);
@@ -210,7 +228,8 @@ void TestCountBitsAll() {
         TestCountBits(2147483647UL);
         TestCountBits(2147483648UL);
         TestCountBits(2147483649UL);
-    TestCountBits(4294967295UL);
+        TestCountBits(4294967295UL);
+        TestCountBits(std::numeric_limits<uint64_t>::max());
     } catch(std::runtime_error &err) {
         std::cout << "Failed: " << err.what() << std::endl;
     }
