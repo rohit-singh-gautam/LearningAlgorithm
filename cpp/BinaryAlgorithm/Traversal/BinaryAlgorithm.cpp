@@ -198,7 +198,7 @@ void FreeRecursive(TreeNode<T> *root) {
 }
 
 template <typename T, T nullValue>
-void TestBinaryTree(const std::vector<T> &values) {
+bool TestBinaryTree(const std::vector<T> &values) {
 	size_t index = 0;
 	auto root = CreateBinaryTreeHelper<T, nullValue>(values, index);
 	const auto preorderRecursive = PreorderRecursive(root);
@@ -219,16 +219,21 @@ void TestBinaryTree(const std::vector<T> &values) {
 
 	if (preorderRecursive != preorderIterative) {
 		std::cout << "Preorder mismatch\n";
+		return false;
 	}
 	if (inorderRecursive != inorderIterative) {
 		std::cout << "Inorder mismatch\n";
+		return false;
 	}
 	if (postorderRecursive != postorderIterative) {
 		std::cout << "Postorder mismatch\n";
+		return false;
 	}
 	if (postorderRecursive != postorderIterativeUsingReverse) {
 		std::cout << "Postorder using reverse mismatch\n";
+		return false;
 	}
+	return true;
 }
 
 int main()
@@ -247,7 +252,11 @@ int main()
 
 	for(const auto &test: testlist) {
 		std::cout << "Test: " << test << std::endl;
-		TestBinaryTree<int, -1>(test);
+		auto ret = TestBinaryTree<int, -1>(test);
+		if (!ret) {
+			std::cout << "Test failed\n";
+			break;
+		}
 	}
 
     return 0;
