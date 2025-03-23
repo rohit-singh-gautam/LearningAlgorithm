@@ -30,11 +30,12 @@ struct TreeNode {
 	T val;
 	TreeNode *left;
 	TreeNode *right;
-	constexpr TreeNode(T x) : val(x), left(NULL), right(NULL) {}	
+	constexpr TreeNode(T x) : val(x), left(nullptr), right(nullptr) {}
+	constexpr TreeNode(T x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}	
 };
 
 template <typename T>
-auto inorderTraversal(TreeNode<T>* root) {
+auto InorderIterative(TreeNode<T>* root) {
 	std::vector<T> result;
 	std::stack < TreeNode<T> *> st;
 	while (root) {
@@ -55,7 +56,7 @@ auto inorderTraversal(TreeNode<T>* root) {
 }
 
 template <typename T>
-auto preorderTraversal(TreeNode<T>* root) {
+auto PreorderIterative(TreeNode<T>* root) {
 	std::vector<T> ans  { };
 	if (root) {
 		std::stack<TreeNode<T>*> st { };
@@ -73,7 +74,7 @@ auto preorderTraversal(TreeNode<T>* root) {
 	return ans;
 }
 
-std::vector<int> postorderTraversalUsingReverse(TreeNode<int>*A) {
+std::vector<int> PostorderIterativeUsingReverse(TreeNode<int>*A) {
 	std::vector<int> ans;
 	if (A) {
 		std::stack<TreeNode<int>*> st;
@@ -91,7 +92,7 @@ std::vector<int> postorderTraversalUsingReverse(TreeNode<int>*A) {
 }
 
 template <typename T>
-auto postorderTraversal(TreeNode<T>* root) {
+auto PostorderIterative(TreeNode<T>* root) {
 	std::vector<T> ans;
 	std::stack<TreeNode<T>*> st;
 
@@ -123,20 +124,131 @@ auto postorderTraversal(TreeNode<T>* root) {
 	return ans;
 }
 
+template <typename T>
+void PreorderRecursive(TreeNode<T>* root, std::vector<T> &result) {
+	if (root) {
+		result.push_back(root->val);
+		PreorderRecursive(root->left, result);
+		PreorderRecursive(root->right, result);
+	}
+}
+
+template <typename T>
+auto PreorderRecursive(TreeNode<T>* root) {
+	std::vector<T> result { };
+	PreorderRecursive(root, result);
+	return result;
+}
+
+template <typename T>
+void InorderRecursive(TreeNode<T>* root, std::vector<T> &result) {
+	if (root) {
+		InorderRecursive(root->left, result);
+		result.push_back(root->val);
+		InorderRecursive(root->right, result);
+	}
+}
+
+template <typename T>
+auto InorderRecursive(TreeNode<T>* root) {
+	std::vector<T> result { };
+	InorderRecursive(root, result);
+	return result;
+}
+
+template <typename T>
+void PostorderRecursive(TreeNode<T>* root, std::vector<T> &result) {
+	if (root) {
+		PostorderRecursive(root->left, result);
+		PostorderRecursive(root->right, result);
+		result.push_back(root->val);
+	}
+}
+
+template <typename T>
+auto PostorderRecursive(TreeNode<T>* root) {
+	std::vector<T> result { };
+	PostorderRecursive(root, result);
+	return result;
+}
+
+template <typename T, T nullValue>
+TreeNode<T> *CreateBinaryTreeHelper(const std::vector<T> &values, size_t &index) {
+	if (index == values.size()) {
+		return nullptr;
+	}
+
+	auto currentvalue = values[index++];
+	if (currentvalue != nullValue) {
+		auto left = CreateBinaryTreeHelper<T, nullValue>(values, index);
+		auto right = CreateBinaryTreeHelper<T, nullValue>(values, index);
+		auto root = new TreeNode<T>(currentvalue, left, right);
+		return root;
+	}
+	return nullptr;
+}
+
+template <typename T>
+void FreeRecursive(TreeNode<T> *root) {
+	if (root) {
+		FreeRecursive(root->left);
+		FreeRecursive(root->right);
+		delete root;
+	}
+}
+
+template <typename T, T nullValue>
+void TestBinaryTree(const std::vector<T> &values) {
+	size_t index = 0;
+	auto root = CreateBinaryTreeHelper<T, nullValue>(values, index);
+	const auto preorderRecursive = PreorderRecursive(root);
+	const auto inorderRecursive = InorderRecursive(root);
+	const auto postorderRecursive = PostorderRecursive(root);
+	const auto preorderIterative = PreorderIterative(root);
+	const auto inorderIterative = InorderIterative(root);
+	const auto postorderIterative = PostorderIterative(root);
+	const auto postorderIterativeUsingReverse = PostorderIterativeUsingReverse(root);
+	FreeRecursive(root);
+	std::cout << "Preorder Recursive: " << preorderRecursive << std::endl;
+	std::cout << "Inorder Recursive: " << inorderRecursive << std::endl;
+	std::cout << "Postorder Recursive: " << postorderRecursive << std::endl;
+	std::cout << "Preorder Iterative: " << preorderIterative << std::endl;
+	std::cout << "Inorder Iterative: " << inorderIterative << std::endl;
+	std::cout << "Postorder Iterative: " << postorderIterative << std::endl;
+	std::cout << "Postorder Recursive Using Recursive: " << postorderIterativeUsingReverse << std::endl;
+
+	if (preorderRecursive != preorderIterative) {
+		std::cout << "Preorder mismatch\n";
+	}
+	if (inorderRecursive != inorderIterative) {
+		std::cout << "Inorder mismatch\n";
+	}
+	if (postorderRecursive != postorderIterative) {
+		std::cout << "Postorder mismatch\n";
+	}
+	if (postorderRecursive != postorderIterativeUsingReverse) {
+		std::cout << "Postorder using reverse mismatch\n";
+	}
+}
+
 int main()
 {
-	TreeNode<int>* root = new TreeNode<int>(8);
-	root->left = new TreeNode<int>(6);
-	root->left->left = new TreeNode<int>(4);
-	root->left->right = new TreeNode<int>(7);
-	root->right = new TreeNode<int>(12);
-	root->right->left = new TreeNode<int>(10);
-	root->right->right = new TreeNode<int>(14);
+	std::vector<std::vector<int>> testlist {
+		{20, -1, -1, 40}, // 40 must be ignored
+		{50},
+		{50, 40, -1, -1, 60},
+		{50, 40},
+		{50, 40, 30},
+		{50, 30, 20, -1, -1, 40, -1, 45, -1, -1, 80, 70, -1, -1, 90, -1, -1},
+		{50, 30, 20, -1, -1, 40, -1, 45, -1, -1, 80, 70, -1, -1, 90}, // -1 at the end not required
+		{100, 50, 25, 12, -1, -1, 37, -1, -1, 75, 62, -1, -1, 87, -1, -1, 150, 125, 112, -1, -1, 137, -1, -1, 175, 162, -1, -1, 187},
+		{100, 50, 25, 12, -1, -1, 37, -1, -1, 75, 62, -1, -1, 87, -1, -1, 150, 125, 112, -1, -1, 137, -1, -1, 175, 162, -1, -1, 187, -1}, // -1 at the end not required
+	};
 
-	std::cout << "inorder: " << inorderTraversal<int>(root) << std::endl;
-	std::cout << "postorder using reverse: " << postorderTraversalUsingReverse(root) << std::endl;
-	std::cout << "postorder: " << postorderTraversal(root) << std::endl;
-	std::cout << "preorder: " << preorderTraversal(root) << std::endl;
+	for(const auto &test: testlist) {
+		std::cout << "Test: " << test << std::endl;
+		TestBinaryTree<int, -1>(test);
+	}
 
     return 0;
 }

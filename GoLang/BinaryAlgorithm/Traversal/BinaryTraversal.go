@@ -12,16 +12,21 @@ type BinaryNode struct {
 	right *BinaryNode
 }
 
-func (root *BinaryNode) InorderRecursive() {
+func (root *BinaryNode) InorderRecursiveHelper(result []int) []int {
 	if root == nil {
-		return
+		return result
 	}
-	root.left.InorderRecursive()
-	fmt.Print(root.value, " ")
-	root.right.InorderRecursive()
+	result = root.left.InorderRecursiveHelper(result)
+	result = append(result, root.value)
+	result = root.right.InorderRecursiveHelper(result)
+	return result
 }
 
-func (root *BinaryNode) InorderIterative() {
+func (root *BinaryNode) InorderRecursive() (result []int) {
+	return root.InorderRecursiveHelper(result)
+}
+
+func (root *BinaryNode) InorderIterative() (result []int) {
 	st := stack.New()
 	for st.Len() != 0 || root != nil {
 		if root != nil {
@@ -29,28 +34,85 @@ func (root *BinaryNode) InorderIterative() {
 			root = root.left
 		} else {
 			top := st.Pop().(*BinaryNode)
-			fmt.Print(top.value, " ")
+			result = append(result, top.value)
 			root = top.right
 		}
 	}
+	return
 }
 
-func (root *BinaryNode) PreorderRecursive() {
+func (root *BinaryNode) PreorderRecursiveHelper(result []int) []int {
 	if root == nil {
-		return
+		return result
 	}
-	fmt.Print(root.value, " ")
-	root.left.PreorderRecursive()
-	root.right.PreorderRecursive()
+	result = append(result, root.value)
+	result = root.left.PreorderRecursiveHelper(result)
+	result = root.right.PreorderRecursiveHelper(result)
+	return result
 }
 
-func (root *BinaryNode) PostorderRecursive() {
-	if root == nil {
-		return
+func (root *BinaryNode) PreorderRecursive() (result []int) {
+	return root.PreorderRecursiveHelper(result)
+}
+
+func (root *BinaryNode) PreorderIterative() (result []int) {
+	st := stack.New()
+	for st.Len() != 0 || root != nil {
+		if root != nil {
+			result = append(result, root.value)
+			st.Push(root)
+			root = root.left
+		} else {
+			top := st.Pop().(*BinaryNode)
+			root = top.right
+		}
 	}
-	root.left.PostorderRecursive()
-	root.right.PostorderRecursive()
-	fmt.Print(root.value, " ")
+	return
+}
+
+func (root *BinaryNode) PostorderRecursiveHelper(result []int) []int {
+	if root == nil {
+		return result
+	}
+	result = root.left.PostorderRecursiveHelper(result)
+	result = root.right.PostorderRecursiveHelper(result)
+	result = append(result, root.value)
+	return result
+}
+func (root *BinaryNode) PostorderRecursive() (result []int) {
+	return root.PostorderRecursiveHelper(result)
+}
+
+func (root *BinaryNode) PostorderIterative() (result []int) {
+	st := stack.New()
+	for st.Len() != 0 || root != nil {
+		if root != nil {
+			st.Push(root)
+			root = root.left
+		} else {
+			top := st.Peek().(*BinaryNode)
+			if top.right == nil {
+				result = append(result, top.value)
+				prev := top
+				st.Pop()
+				for st.Len() != 0 {
+					top = st.Pop().(*BinaryNode)
+					if top.right == nil || top.right == prev {
+						result = append(result, top.value)
+						prev = top
+					} else {
+						st.Push(top)
+						root = top.right
+						break
+					}
+				}
+			} else {
+				st.Push(top)
+				root = top.right
+			}
+		}
+	}
+	return
 }
 
 func (root *BinaryNode) FreeRecursive() {
@@ -86,21 +148,45 @@ func CreateBinaryTree(value []int) *BinaryNode {
 	return CreateBinaryTreeHelper(value, &index)
 }
 
+func CompareSlices(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for index, value := range a {
+		if value != b[index] {
+			return false
+		}
+	}
+	return true
+}
+
 func test(value []int) {
 	root := CreateBinaryTree(value)
-	fmt.Print("Preorder Recursive: ")
-	root.PreorderRecursive()
-	fmt.Println()
-	fmt.Print("Inorder Recursive: ")
-	root.InorderRecursive()
-	fmt.Println()
-	fmt.Print("Postorder Recursive: ")
-	root.PostorderRecursive()
-	fmt.Println()
+	preorderRecursiveResult := root.PreorderRecursive()
+	fmt.Println("Preorder Recursive: ", preorderRecursiveResult)
+	inorderRecursiveResult := root.InorderRecursive()
+	fmt.Println("Inorder Recursive: ", inorderRecursiveResult)
+	postorderRecursiveResult := root.PostorderRecursive()
+	fmt.Println("Postorder Recursive: ", postorderRecursiveResult)
 
-	fmt.Print("Inorder Iterative: ")
-	root.InorderIterative()
-	fmt.Println()
+	preorderIterativeResult := root.PreorderIterative()
+	fmt.Println("Preorder Iterative: ", preorderIterativeResult)
+	inorderIterativeResult := root.InorderIterative()
+	fmt.Println("Inorder Iterative: ", inorderIterativeResult)
+	postorderIterativeResult := root.PostorderIterative()
+	fmt.Println("Postorder Iterative: ", postorderIterativeResult)
+
+	if !CompareSlices(preorderRecursiveResult, preorderIterativeResult) {
+		fmt.Println("Test Failed: Preorder Recursive and Preorder Iterative are not same")
+	}
+
+	if !CompareSlices(inorderRecursiveResult, inorderIterativeResult) {
+		fmt.Println("Test Failed: Inorder Recursive and Inorder Iterative are not same")
+	}
+
+	if !CompareSlices(postorderRecursiveResult, postorderIterativeResult) {
+		fmt.Println("Test Failed: Postorder Recursive and Postorder Iterative are not same")
+	}
 }
 
 func main() {
