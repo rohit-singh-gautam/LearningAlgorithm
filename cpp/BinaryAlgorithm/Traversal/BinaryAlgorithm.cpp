@@ -30,8 +30,8 @@ struct TreeNode {
 	T val;
 	TreeNode *left;
 	TreeNode *right;
-	constexpr TreeNode(T x) : val(x), left(nullptr), right(nullptr) {}
-	constexpr TreeNode(T x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}	
+	template <typename T1>
+	constexpr TreeNode(T1&& x, TreeNode *left = nullptr, TreeNode *right = nullptr) : val{ std::forward<T>(x) }, left { left }, right { right } {}	
 };
 
 template <typename T>
