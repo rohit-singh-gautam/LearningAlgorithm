@@ -1,73 +1,67 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 template <typename ValueT>
 class Stack {
     template <typename T>
     friend std::ostream &operator<<(std::ostream &os, const Stack<T> &s);
-    ValueT *store { };
-    size_t size;
-    size_t top { 0 };
+    std::unique_ptr<ValueT[]> store;
+    size_t capacity;
+    size_t size { 0 };
 
-    void Resize() {
-        size_t newsize = size * 2;
-        ValueT *newStore = new ValueT[newsize];
-        for (size_t i = 0; i < top; ++i) {
+    void ResizeIfRequired() {
+        if (size + 1 < capacity) {
+            return;
+        }
+        size_t newcapacity = capacity * 2;
+        auto newStore = new ValueT[newcapacity];
+        for (size_t i = 0; i < capacity; ++i) {
             newStore[i] = std::move(store[i]);
         }
-        delete[] store;
-        store = newStore;
-        size = newsize;
+        store.reset(newStore);
+        capacity = newcapacity;
     }
 public:
-    Stack(size_t size) : store { new ValueT[size]}, size { size }, top { 0 } { }
+    Stack(size_t capacity) : store { new ValueT[capacity] }, capacity { capacity } { }
     Stack(const Stack &) = delete;
-
-    ~Stack() {
-        delete[] store;
-    }
-
     Stack & operator=(const Stack &) = delete;
 
     template <typename T>
     void Push(const T &v) {
-        if (top == size) {
-            Resize();
-        }
-        store[top++] = v;
+        ResizeIfRequired();
+        store[size++] = v;
     }
 
     template <typename T>
     void Push(T &&v) {
-        if (top == size) {
-            Resize();
-        }
-        store[top++] = std::forward(v);
+        ResizeIfRequired();
+        store[size++] = std::forward(v);
     }
     ValueT &Top() {
-        return store[top - 1];
+        return store[size - 1];
     }
     bool Pop() {
-        if (top == 0) {
+        if (size == 0) {
             return false;
         }
-        --top;
+        --size;
         return true;
     }
     bool IsEmpty() {
-        return top == 0;
+        return size == 0;
     }
     size_t Size() {
-        return top;
+        return size;
     }
     void Clear() {
-        top = 0;
+        size = 0;
     }
 };
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Stack<T> &s) {
-    for (size_t i = 0; i < s.top; ++i) {
+    for (size_t i = 0; i < s.size; ++i) {
         os << s.store[i] << " ";
     }
     return os;
@@ -145,6 +139,20 @@ int main() {
             { TestCommand<int>::POP, 0 },
             { TestCommand<int>::TOP, 2 },
             { TestCommand<int>::SIZE, 0, 2 },
+            { TestCommand<int>::CLEAR, 0 },
+            { TestCommand<int>::SIZE, 0, 0 },
+        },
+        {
+            { TestCommand<int>::PUSH, 3 },
+            { TestCommand<int>::PUSH, 1 },
+            { TestCommand<int>::PUSH, 2 },
+            { TestCommand<int>::PUSH, 3 },
+            { TestCommand<int>::PUSH, 8 },
+            { TestCommand<int>::TOP, 8 },
+            { TestCommand<int>::SIZE, 0, 5 },
+            { TestCommand<int>::POP, 0 },
+            { TestCommand<int>::TOP, 3 },
+            { TestCommand<int>::SIZE, 0, 4 },
             { TestCommand<int>::CLEAR, 0 },
             { TestCommand<int>::SIZE, 0, 0 },
         }

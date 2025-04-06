@@ -6,7 +6,7 @@ template <typename ValueT>
 class Queue {
     template <typename T>
     friend std::ostream &operator<<(std::ostream &os, const Queue<T> &q);
-    std::unique_ptr<ValueT> store { };
+    std::unique_ptr<ValueT[]> store { };
     size_t capacity { 0 };
 
     size_t frontIndex { 0 };
@@ -18,10 +18,9 @@ class Queue {
         }
         size_t newcapacity = capacity * 2;
         ValueT *newStore = new ValueT[newcapacity];
-        auto oldStore = store.get();
         size_t count { 0 };
         while(count < size) {
-            newStore[count] = std::move(oldStore[(frontIndex + count) % capacity]);
+            newStore[count] = std::move(store[(frontIndex + count) % capacity]);
             ++count;
         }
         frontIndex = 0;
@@ -38,17 +37,17 @@ public:
     template <typename T>
     void Enqueue(const T &v) {
         ResizeIfRequired();
-        store.get()[(frontIndex + size++) % capacity] = v;
+        store[(frontIndex + size++) % capacity] = v;
     }
 
     template <typename T>
     void Enqueue(T &&v) {
         ResizeIfRequired();
-        store.get()[(frontIndex + size++) % capacity] = std::forward(v);
+        store[(frontIndex + size++) % capacity] = std::forward(v);
     }
 
     ValueT &Front() {
-        return store.get()[frontIndex];
+        return store[frontIndex];
     }
 
     bool Dequeue() {
@@ -82,7 +81,7 @@ public:
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Queue<T> &q) {
     for (size_t i = 0; i < q.size; ++i) {
-        os << q.store.get()[(q.frontIndex + i) % q.capacity] << " ";
+        os << q.store[(q.frontIndex + i) % q.capacity] << " ";
     }
     return os;
 }
@@ -147,8 +146,6 @@ bool TestQueue(const std::vector<TestCommand<T>> &commands) {
             return false;
         }
     }
-    std::cout << "Final Queue: " << q << std::endl;
-    std::cout << "Final Size: " << q.Size() << std::endl;
     return true;
 }
 
@@ -228,7 +225,6 @@ int main(int, char *[]) {
     };
 
     for(const auto &testCase : testCases) {
-        std::cout << "Running test case..." << std::endl;
         if (!TestQueue(testCase)) {
             std::cout << "Test case failed!" << std::endl;
         } else {
