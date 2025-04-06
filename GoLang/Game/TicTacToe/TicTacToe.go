@@ -60,8 +60,7 @@ func (g *Game) winner() rune {
 	return 0
 }
 
-func (g *Game) GetMoves() []Move {
-	moves := []Move{}
+func (g *Game) GetMoves() (moves []Move) {
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 			if g.board[i][j] == 0 {
