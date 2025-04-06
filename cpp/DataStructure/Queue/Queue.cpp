@@ -13,9 +13,7 @@ class Queue {
     size_t size { 0 };
 
     void ResizeIfRequired() {
-        if (size + 1 < capacity) {
-            return;
-        }
+        if (size < capacity) return;
         size_t newcapacity = capacity * 2;
         ValueT *newStore = new ValueT[newcapacity];
         size_t count { 0 };
@@ -110,6 +108,10 @@ bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd) {
             q.Enqueue(cmd.value);
             break;
         case TestCommand<T>::DEQUEUE:
+            if (q.IsEmpty()) {
+                std::cout << "Queue is empty, cannot get front value." << std::endl;
+                return false;
+            }
             q.Dequeue();
             break;
         case TestCommand<T>::FRONT:
@@ -137,6 +139,7 @@ bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd) {
     }
     return true;
 }
+
 template <typename T>
 bool TestQueue(const std::vector<TestCommand<T>> &commands) {
     Queue<T> q(2);

@@ -11,9 +11,7 @@ class Stack {
     size_t size { 0 };
 
     void ResizeIfRequired() {
-        if (size + 1 < capacity) {
-            return;
-        }
+        if (size < capacity) return;
         size_t newcapacity = capacity * 2;
         auto newStore = new ValueT[newcapacity];
         for (size_t i = 0; i < capacity; ++i) {

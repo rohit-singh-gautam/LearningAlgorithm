@@ -6,6 +6,6 @@ elseif (MSVC)
 add_compile_options(/W4 /WX)
 endif()
 
-add_executable(Queue Queue.cpp)
+add_executable(Deque Deque.cpp)
 
-target_compile_features(Queue PRIVATE cxx_std_20)
+target_compile_features(Deque PRIVATE cxx_std_20)
