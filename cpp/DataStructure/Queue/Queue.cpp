@@ -1,99 +1,88 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 template <typename ValueT>
 class Queue {
     template <typename T>
     friend std::ostream &operator<<(std::ostream &os, const Queue<T> &q);
-    ValueT *store { };
-    size_t size;
+    std::unique_ptr<ValueT> store { };
+    size_t capacity { 0 };
 
-    size_t front { 0 };
-    size_t back { 0 };
+    size_t frontIndex { 0 };
+    size_t size { 0 };
 
-    void Resize() {
-        size_t newsize = size * 2;
-        ValueT *newStore = new ValueT[newsize];
+    void ResizeIfRequired() {
+        if (size + 1 < capacity) {
+            return;
+        }
+        size_t newcapacity = capacity * 2;
+        ValueT *newStore = new ValueT[newcapacity];
+        auto oldStore = store.get();
         size_t count { 0 };
-        while((front + count) != back) {
-            newStore[count] = std::move(store[(front + count) % size]);
+        while(count < size) {
+            newStore[count] = std::move(oldStore[(frontIndex + count) % capacity]);
             ++count;
         }
-        front = 0;
-        back = count;
-        size = newsize;
-        delete[] store;
-        store = newStore;
+        frontIndex = 0;
+        capacity = newcapacity;
+        store.reset(newStore);
     }
 
 public:
-    Queue(size_t size) : store { new ValueT[size]}, size { size }, front { 0 }, back { 0 } { }
+    Queue(size_t capacity) : store { new ValueT[capacity] }, capacity { capacity } { }
     Queue(const Queue &) = delete;
-
-    ~Queue() {
-        delete[] store;
-    }
 
     Queue & operator=(const Queue &) = delete;
 
     template <typename T>
     void Enqueue(const T &v) {
-        auto newback = (back + 1) % size;
-        if (front == newback) {
-            Resize();
-            newback = (back + 1) % size;
-        }
-        store[back] = v;
-        back = newback;
+        ResizeIfRequired();
+        store.get()[(frontIndex + size++) % capacity] = v;
     }
 
     template <typename T>
     void Enqueue(T &&v) {
-        auto newback = (back + 1) % size;
-        if (front == newback) {
-            Resize();
-            newback = (back + 1) % size;
-        }
-        store[back] = std::forward(v);
-        back = newback;
+        ResizeIfRequired();
+        store.get()[(frontIndex + size++) % capacity] = std::forward(v);
     }
 
     ValueT &Front() {
-        return store[front];
+        return store.get()[frontIndex];
     }
 
     bool Dequeue() {
-        if (front == back) {
+        if (!size) {
             return false;
         }
-        front = (front + 1) % size;
+        frontIndex = (frontIndex + 1) % capacity;
+        --size;
         return true;
     }
 
     bool IsEmpty() {
-        return front == back;
+        return !size;
     }
 
     size_t Size() {
-        return (back - front + size) % size;
+        return size;
     }
+
+    size_t Capacity() {
+        return capacity;
+    }
+
     void Clear() {
-        front = 0;
-        back = 0;
-    }
-    void Print() const {
-        for (size_t i = front; i != back; i = (i + 1) % size) {
-            std::cout << store[i] << " ";
-        }
-        std::cout << std::endl;
+        frontIndex = 0;
+        size = 0;
     }
 };
 
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Queue<T> &q) {
-    for (size_t i = q.front; i != q.back; i = (i + 1) % q.size) {
-        os << q.store[i] << " ";
+    for (size_t i = 0; i < q.size; ++i) {
+        os << q.store.get()[(q.frontIndex + i) % q.capacity] << " ";
     }
     return os;
 }
@@ -125,7 +114,10 @@ bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd) {
             q.Dequeue();
             break;
         case TestCommand<T>::FRONT:
-            if (q.IsEmpty()) return false;
+            if (q.IsEmpty()) {
+                std::cout << "Queue is empty, cannot get front value." << std::endl;
+                return false;
+            }
             if (q.Front() != cmd.value) {
                 std::cout << "Front value mismatch: expected " << cmd.value << ", got " << q.Front() << std::endl;
                 return false;
@@ -141,7 +133,7 @@ bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd) {
             q.Clear();
             break;
         case TestCommand<T>::PRINT:
-            q.Print();
+            std::cout << "Queue: " << q << std::endl;
             break;
     }
     return true;
@@ -187,7 +179,52 @@ int main(int, char *[]) {
             { TestCommand<int>::SIZE, 0, 3 },
             { TestCommand<int>::CLEAR },
             { TestCommand<int>::SIZE, 0 },
-        }
+        },
+        {
+            { TestCommand<int>::ENQUEUE, 20 },
+            { TestCommand<int>::ENQUEUE, 5 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::ENQUEUE, 10 },
+            { TestCommand<int>::ENQUEUE, 15 },
+            { TestCommand<int>::FRONT, 10 },
+            { TestCommand<int>::SIZE, 0, 2 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::FRONT, 15 },
+            { TestCommand<int>::SIZE, 0, 1 },
+            { TestCommand<int>::CLEAR },
+            { TestCommand<int>::SIZE, 0 },
+            { TestCommand<int>::ENQUEUE, 20 },
+            { TestCommand<int>::ENQUEUE, 5 },
+            { TestCommand<int>::ENQUEUE, 10 },
+            { TestCommand<int>::ENQUEUE, 15 },
+            { TestCommand<int>::FRONT, 20 },
+            { TestCommand<int>::SIZE, 0, 4 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::FRONT, 5 },
+            { TestCommand<int>::SIZE, 0, 3 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::FRONT, 10 },
+            { TestCommand<int>::SIZE, 0, 2 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::FRONT, 15 },
+            { TestCommand<int>::SIZE, 0, 1 },
+            { TestCommand<int>::DEQUEUE },
+        },
+        {
+            { TestCommand<int>::ENQUEUE, 1 },
+            { TestCommand<int>::ENQUEUE, 2 },
+            { TestCommand<int>::ENQUEUE, 3 },
+            { TestCommand<int>::ENQUEUE, 4 },
+            { TestCommand<int>::ENQUEUE, 5 },
+            { TestCommand<int>::FRONT, 1 },
+            { TestCommand<int>::SIZE, 0, 5 },
+            { TestCommand<int>::DEQUEUE },
+            { TestCommand<int>::FRONT, 2 },
+            { TestCommand<int>::SIZE, 0, 4 },
+            { TestCommand<int>::CLEAR },
+            { TestCommand<int>::SIZE, 0 },
+        }   
     };
 
     for(const auto &testCase : testCases) {
