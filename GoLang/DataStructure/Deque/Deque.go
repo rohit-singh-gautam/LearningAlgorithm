@@ -18,12 +18,11 @@ func NewDeque() *Deque {
 type CommandId int
 
 const (
-	pushBack CommandId = iota
-	popBack
-	pushFront
-	popFront
-	verify
-	clear
+	PUSH_BACK CommandId = iota
+	POP_BACK
+	PUSH_FRONT
+	POP_FRONT
+	CLEAR
 )
 
 type Command struct {
@@ -109,24 +108,21 @@ func (dq *Deque) Clear() {
 	dq.size = 0
 }
 
-func (dq *Deque) ExecuteCommand(cmd Command) {
+func (dq *Deque) ExecuteCommand(cmd Command) bool {
 	switch cmd.ID {
-	case pushBack:
+	case PUSH_BACK:
 		dq.PushBack(cmd.back)
 
-	case popBack:
+	case POP_BACK:
 		dq.PopBack()
 
-	case pushFront:
+	case PUSH_FRONT:
 		dq.PushFront(cmd.front)
 
-	case popFront:
+	case POP_FRONT:
 		dq.PopFront()
 
-	case verify:
-		// Do nothing
-
-	case clear:
+	case CLEAR:
 		dq.Clear()
 
 	default:
@@ -134,39 +130,111 @@ func (dq *Deque) ExecuteCommand(cmd Command) {
 	}
 
 	if cmd.size != dq.size {
-		panic("Command size mismatch")
+		fmt.Printf("Deque Size does not match expected: %d, got: %d\n", cmd.size, dq.Size())
+		return false
 	}
 
 	if dq.size != 0 {
 		if cmd.front != dq.Front() {
-			panic("Front mismatch")
+			fmt.Printf("Deque Front does not match expected: %d, got: %d ", cmd.front, dq.Front())
+			return false
 		}
 		if cmd.back != dq.Back() {
-			panic("Back mismatch")
+			fmt.Printf("Deque Back does not match expected: %d, got: %d ", cmd.front, dq.Back())
+			return false
 		}
 	}
+	return true
 }
 
-func ExecuteTestCommand(test []Command) {
+func ExecuteTestCommand(test []Command) bool {
 	dq := NewDeque()
-	for _, cmd := range test {
-		dq.ExecuteCommand(cmd)
+	for commandIndex, cmd := range test {
+		if !dq.ExecuteCommand(cmd) {
+			fmt.Printf("Command failed: %d\n", commandIndex)
+			return false
+		}
 	}
+	return true
 }
 
 func main() {
 	testlist := [][]Command{
 		{
-			{pushBack, 1, 10, 10},
-			{pushFront, 2, 20, 10},
-			{pushBack, 3, 20, 30},
-			{popFront, 2, 10, 30},
-			{clear, 0, 0, 0},
+			{PUSH_BACK, 1, 10, 10},
+			{PUSH_FRONT, 2, 20, 10},
+			{PUSH_BACK, 3, 20, 30},
+			{PUSH_FRONT, 4, 10, 30},
+			{CLEAR, 0, 0, 0},
+		},
+		{
+			{PUSH_BACK, 1, 20, 20},
+			{PUSH_BACK, 2, 20, 5},
+			{POP_FRONT, 1, 5, 5},
+			{PUSH_BACK, 2, 5, 10},
+			{PUSH_BACK, 3, 5, 15},
+			{POP_BACK, 2, 5, 10},
+			{PUSH_BACK, 3, 5, 20},
+			{PUSH_FRONT, 4, 5, 20},
+			{PUSH_FRONT, 5, 10, 20},
+			{PUSH_BACK, 6, 10, 15},
+			{POP_FRONT, 5, 5, 15},
+			{POP_FRONT, 4, 5, 15},
+			{POP_FRONT, 3, 10, 15},
+			{POP_FRONT, 2, 20, 15},
+		},
+		{
+			{PUSH_BACK, 1, 1, 1},
+			{PUSH_BACK, 2, 1, 2},
+			{PUSH_BACK, 3, 1, 3},
+			{POP_FRONT, 2, 2, 3},
+			{CLEAR, 0, 0, 0},
+			{PUSH_BACK, 1, 1, 1},
+			{PUSH_BACK, 2, 1, 2},
+			{PUSH_BACK, 3, 1, 3},
+			{POP_FRONT, 2, 2, 3},
+		},
+		{
+			{PUSH_BACK, 1, 1, 1},
+			{PUSH_BACK, 2, 1, 2},
+			{PUSH_BACK, 3, 1, 3},
+			{PUSH_BACK, 4, 1, 5},
+			{POP_FRONT, 3, 2, 5},
+			{CLEAR, 0, 0, 0},
+		},
+		{
+			{PUSH_BACK, 1, 20, 20},
+			{PUSH_BACK, 2, 20, 5},
+			{POP_FRONT, 1, 5, 5},
+			{POP_FRONT, 0, 0, 0},
+			{PUSH_BACK, 1, 10, 10},
+			{PUSH_BACK, 2, 10, 15},
+			{POP_FRONT, 1, 15, 15},
+			{CLEAR, 0, 0, 0},
+			{PUSH_BACK, 1, 20, 20},
+			{PUSH_BACK, 2, 20, 5},
+			{PUSH_BACK, 3, 20, 10},
+			{PUSH_BACK, 4, 20, 15},
+			{POP_FRONT, 3, 5, 15},
+			{POP_FRONT, 2, 10, 15},
+			{POP_FRONT, 1, 15, 15},
+			{POP_FRONT, 0, 0, 0},
+		},
+		{
+			{PUSH_BACK, 1, 1, 1},
+			{PUSH_BACK, 2, 1, 2},
+			{PUSH_BACK, 3, 1, 3},
+			{PUSH_BACK, 4, 1, 4},
+			{PUSH_BACK, 5, 1, 5},
+			{POP_FRONT, 4, 2, 5},
+			{CLEAR, 0, 0, 0},
 		},
 	}
 
 	for index, test := range testlist {
 		fmt.Printf("Test %d\n", index)
-		ExecuteTestCommand(test)
+		if !ExecuteTestCommand(test) {
+			fmt.Printf("Test %d failed\n", index)
+		}
 	}
 }

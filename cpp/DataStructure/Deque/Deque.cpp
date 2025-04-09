@@ -91,73 +91,58 @@ std::ostream &operator<<(std::ostream &os, const Deque<ValueT> &value) {
     return os;
 }
 
+enum Command {
+    PUSH_BACK,
+    POP_BACK,
+    PUSH_FRONT,
+    POP_FRONT,
+    CLEAR,
+};
+
 template <typename T>
 class TestCommand {
 public:
-    enum Command {
-        PUSH_BACK,
-        POP_BACK,
-        PUSH_FRONT,
-        POP_FRONT,
-        FRONT,
-        BACK,
-        SIZE,
-        CLEAR,
-        PRINT,
-    };
     
-    Command command { };
-    T value { };
-    size_t size { };
+    Command command;
+    size_t size;
+    T front;
+    T back;
 };
 
 template <typename T>
 bool ExecuteCommand(Deque<T> &q, const TestCommand<T> &cmd) {
     switch (cmd.command) {
-        case TestCommand<T>::PUSH_BACK:
-            q.PushBack(cmd.value);
+        case PUSH_BACK:
+            q.PushBack(cmd.back);
             break;
-        case TestCommand<T>::POP_BACK:
+        case POP_BACK:
             q.PopBack();
             break;
-        case TestCommand<T>::PUSH_FRONT:
-            q.PushFront(cmd.value);
+        case PUSH_FRONT:
+            q.PushFront(cmd.front);
             break;
-        case TestCommand<T>::POP_FRONT:
+        case POP_FRONT:
             q.PopFront();
             break;
-        case TestCommand<T>::FRONT:
-            if (q.IsEmpty()) {
-                std::cout << "Deque is empty, cannot get front value." << std::endl;
-                return false;
-            }
-            if (q.Front() != cmd.value) {
-                std::cout << "Deque Front value mismatch: expected " << cmd.value << ", got " << q.Front() << std::endl;
-                return false;
-            }
-            break;
-        case TestCommand<T>::BACK:
-            if (q.IsEmpty()) {
-                std::cout << "Deque is empty, cannot get back value." << std::endl;
-                return false;
-            }
-            if (q.Back() != cmd.value) {
-                std::cout << "Deque Back value mismatch: expected " << cmd.value << ", got " << q.Back() << std::endl;
-                return false;
-            }
-            break;
-        case TestCommand<T>::SIZE:
-            if (q.Size() != cmd.size) {
-                std::cout << "Size mismatch: expected " << cmd.size << ", got " << q.Size() << std::endl;
-                return false;
-            }
-            break;
-        case TestCommand<T>::CLEAR:
+        case CLEAR:
             q.Clear();
             break;
-        case TestCommand<T>::PRINT:
-            std::cout << "Deque: " << q << std::endl;
-            break;
+    }
+
+    if (q.Size() != cmd.size) {
+        std::cout << "Size mismatch: expected " << cmd.size << ", got " << q.Size() << std::endl;
+        return false;
+    }
+
+    if (cmd.size) {
+        if (q.Front() != cmd.front) {
+            std::cout << "Deque Front value mismatch: expected " << cmd.front << ", got " << q.Front() << std::endl;
+            return false;
+        }
+        if (q.Back() != cmd.back) {
+            std::cout << "Deque Back value mismatch: expected " << cmd.back << ", got " << q.Back() << std::endl;
+            return false;
+        }
     }
     return true;
 }
@@ -165,11 +150,13 @@ bool ExecuteCommand(Deque<T> &q, const TestCommand<T> &cmd) {
 template <typename T>
 bool TestDeque(const std::vector<TestCommand<T>> &commands) {
     Deque<T> q(2);
+    size_t commandIndex = 1;
     for (const auto &cmd : commands) {
         if (!ExecuteCommand(q, cmd)) {
-            std::cout << "Command failed: " << cmd.command << std::endl;
+            std::cout << "Command failed: " << commandIndex << std::endl;
             return false;
         }
+        ++commandIndex;
     }
     return true;
 }
@@ -177,112 +164,85 @@ bool TestDeque(const std::vector<TestCommand<T>> &commands) {
 int main() {
     const std::vector<std::vector<TestCommand<int>>> testCases = {
         {
-            { TestCommand<int>::PUSH_BACK, 20 },
-            { TestCommand<int>::PUSH_BACK, 5 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::PUSH_BACK, 10 },
-            { TestCommand<int>::PUSH_BACK, 15 },
-            { TestCommand<int>::FRONT, 5 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::POP_BACK },
-            { TestCommand<int>::BACK, 10 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::PUSH_BACK, 20 },
-            { TestCommand<int>::PUSH_FRONT, 5 },
-            { TestCommand<int>::PUSH_FRONT, 10 },
-            { TestCommand<int>::PUSH_BACK, 15 },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 6 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 5 },
-            { TestCommand<int>::SIZE, 0, 5 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 5 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::SIZE, 0, 2 },
+            {PUSH_BACK, 1, 10, 10},
+            {PUSH_FRONT, 2, 20, 10},
+            {PUSH_BACK, 3, 20, 30},
+            {PUSH_FRONT, 4, 10, 30},
+            {CLEAR, 0, 0, 0},
         },
         {
-            { TestCommand<int>::PUSH_BACK, 1 },
-            { TestCommand<int>::PUSH_BACK, 2 },
-            { TestCommand<int>::PUSH_BACK, 3 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { PUSH_BACK, 1, 20, 20 },
+            { PUSH_BACK, 2, 20, 5 },
+            { POP_FRONT, 1, 5, 5 },
+            { PUSH_BACK, 2, 5, 10 },
+            { PUSH_BACK, 3, 5, 15 },
+            { POP_BACK, 2, 5, 10 },
+            { PUSH_BACK, 3, 5, 20 },
+            { PUSH_FRONT, 4, 5, 20 },
+            { PUSH_FRONT, 5, 10, 20 },
+            { PUSH_BACK, 6, 10, 15 },
+            { POP_FRONT, 5, 5, 15 },
+            { POP_FRONT, 4, 5, 15 },
+            { POP_FRONT, 3, 10, 15 },
+            { POP_FRONT, 2, 20, 15 },
         },
         {
-            { TestCommand<int>::PUSH_BACK, 1 },
-            { TestCommand<int>::PUSH_BACK, 2 },
-            { TestCommand<int>::PUSH_BACK, 3 },
-            { TestCommand<int>::PUSH_BACK, 5 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { PUSH_BACK, 1, 1, 1 },
+            { PUSH_BACK, 2, 1, 2 },
+            { PUSH_BACK, 3, 1, 3 },
+            { POP_FRONT, 2, 2, 3 },
+            { CLEAR, 0, 0, 0 },
+            { PUSH_BACK, 1, 1, 1 },
+            { PUSH_BACK, 2, 1, 2 },
+            { PUSH_BACK, 3, 1, 3 },
+            { POP_FRONT, 2, 2, 3 },
         },
         {
-            { TestCommand<int>::PUSH_BACK, 20 },
-            { TestCommand<int>::PUSH_BACK, 5 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::PUSH_BACK, 10 },
-            { TestCommand<int>::PUSH_BACK, 15 },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 15 },
-            { TestCommand<int>::SIZE, 0, 1 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
-            { TestCommand<int>::PUSH_BACK, 20 },
-            { TestCommand<int>::PUSH_BACK, 5 },
-            { TestCommand<int>::PUSH_BACK, 10 },
-            { TestCommand<int>::PUSH_BACK, 15 },
-            { TestCommand<int>::FRONT, 20 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 5 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 15 },
-            { TestCommand<int>::SIZE, 0, 1 },
-            { TestCommand<int>::POP_FRONT },
+            { PUSH_BACK, 1, 1, 1 },
+            { PUSH_BACK, 2, 1, 2 },
+            { PUSH_BACK, 3, 1, 3 },
+            { PUSH_BACK, 4, 1, 5 },
+            { POP_FRONT, 3, 2, 5 },
+            { CLEAR, 0, 0, 0 },
         },
         {
-            { TestCommand<int>::PUSH_BACK, 1 },
-            { TestCommand<int>::PUSH_BACK, 2 },
-            { TestCommand<int>::PUSH_BACK, 3 },
-            { TestCommand<int>::PUSH_BACK, 4 },
-            { TestCommand<int>::PUSH_BACK, 5 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 5 },
-            { TestCommand<int>::POP_FRONT },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { PUSH_BACK, 1, 20, 20 },
+            { PUSH_BACK, 2, 20, 5 },
+            { POP_FRONT, 1, 5, 5 },
+            { POP_FRONT, 0, 0, 0 },
+            { PUSH_BACK, 1, 10, 10 },
+            { PUSH_BACK, 2, 10, 15 },
+            { POP_FRONT, 1, 15, 15 },
+            { CLEAR, 0, 0, 0 },
+            { PUSH_BACK, 1, 20, 20 },
+            { PUSH_BACK, 2, 20, 5 },
+            { PUSH_BACK, 3, 20, 10 },
+            { PUSH_BACK, 4, 20, 15 },
+            { POP_FRONT, 3, 5, 15 },
+            { POP_FRONT, 2, 10, 15 },
+            { POP_FRONT, 1, 15, 15 },
+            { POP_FRONT, 0, 0, 0 },
+        },
+        {
+            { PUSH_BACK, 1, 1, 1 },
+            { PUSH_BACK, 2, 1, 2 },
+            { PUSH_BACK, 3, 1, 3 },
+            { PUSH_BACK, 4, 1, 4 },
+            { PUSH_BACK, 5, 1, 5 },
+            { POP_FRONT, 4, 2, 5 },
+            { CLEAR, 0, 0, 0 },
         },
     };
 
+    size_t testIndex = 1;
     for(const auto &testCase : testCases) {
+        std::cout << "Test " << testIndex << " running" << std::endl;
         if (!TestDeque(testCase)) {
             std::cout << "Test case failed!" << std::endl;
         } else {
             std::cout << "Test case passed!" << std::endl;
         }
+        ++testIndex;
     }
 
 }
