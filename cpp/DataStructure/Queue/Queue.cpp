@@ -2,8 +2,25 @@
 #include <vector>
 #include <memory>
 
+enum Command {
+    ENQUEUE,
+    DEQUEUE,
+    CLEAR,
+};
+
+template <typename T>
+class TestCommand {
+public:
+    Command command;
+    size_t size;
+    T front;
+    T back;
+};
+
 template <typename ValueT>
 class Queue {
+    template <typename T>
+    friend bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd);
     template <typename T>
     friend std::ostream &operator<<(std::ostream &os, const Queue<T> &q);
     std::unique_ptr<ValueT[]> store { };
@@ -24,6 +41,10 @@ class Queue {
         frontIndex = 0;
         capacity = newcapacity;
         store.reset(newStore);
+    }
+
+    ValueT &Back() const {
+        return store[(frontIndex + size - 1) % capacity];
     }
 
 public:
@@ -85,57 +106,35 @@ std::ostream &operator<<(std::ostream &os, const Queue<T> &q) {
 }
 
 template <typename T>
-class TestCommand {
-public:
-    enum Command {
-        ENQUEUE,
-        DEQUEUE,
-        FRONT,
-        SIZE,
-        CLEAR,
-        PRINT,
-    };
-    
-    Command command { };
-    T value { };
-    size_t size { };
-};
-
-template <typename T>
 bool ExecuteCommand(Queue<T> &q, const TestCommand<T> &cmd) {
     switch (cmd.command) {
-        case TestCommand<T>::ENQUEUE:
-            q.Enqueue(cmd.value);
+        case ENQUEUE:
+            q.Enqueue(cmd.back);
             break;
-        case TestCommand<T>::DEQUEUE:
+        case DEQUEUE:
             if (q.IsEmpty()) {
                 std::cout << "Queue is empty, cannot get front value." << std::endl;
                 return false;
             }
             q.Dequeue();
             break;
-        case TestCommand<T>::FRONT:
-            if (q.IsEmpty()) {
-                std::cout << "Queue is empty, cannot get front value." << std::endl;
-                return false;
-            }
-            if (q.Front() != cmd.value) {
-                std::cout << "Front value mismatch: expected " << cmd.value << ", got " << q.Front() << std::endl;
-                return false;
-            }
-            break;
-        case TestCommand<T>::SIZE:
-            if (q.Size() != cmd.size) {
-                std::cout << "Size mismatch: expected " << cmd.size << ", got " << q.Size() << std::endl;
-                return false;
-            }
-            break;
-        case TestCommand<T>::CLEAR:
+        case CLEAR:
             q.Clear();
             break;
-        case TestCommand<T>::PRINT:
-            std::cout << "Queue: " << q << std::endl;
-            break;
+    }
+    if (q.Size() != cmd.size) {
+        std::cout << "Size mismatch: expected " << cmd.size << ", got " << q.Size() << std::endl;
+        return false;
+    }
+    if (cmd.size) {
+        if (q.Front() != cmd.front) {
+            std::cout << "Queue Front value mismatch: expected " << cmd.front << ", got " << q.Front() << std::endl;
+            return false;
+        }
+        if (q.Back() != cmd.back) {
+            std::cout << "Queue Back value mismatch: expected " << cmd.back << ", got " << q.Back() << std::endl;
+            return false;
+        }
     }
     return true;
 }
@@ -156,74 +155,46 @@ bool TestQueue(const std::vector<TestCommand<T>> &commands) {
 int main(int, char *[]) {
     const std::vector<std::vector<TestCommand<int>>> testCases = {
         {
-            { TestCommand<int>::ENQUEUE, 1 },
-            { TestCommand<int>::ENQUEUE, 2 },
-            { TestCommand<int>::ENQUEUE, 3 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { ENQUEUE, 1, 1, 1 },
+            { ENQUEUE, 2, 1, 2 },
+            { ENQUEUE, 3, 1, 3 },
+            { DEQUEUE, 2, 2, 3 },
+            { CLEAR, 0, 0, 0 },
         },
         {
-            { TestCommand<int>::ENQUEUE, 1 },
-            { TestCommand<int>::ENQUEUE, 2 },
-            { TestCommand<int>::ENQUEUE, 3 },
-            { TestCommand<int>::ENQUEUE, 5 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { ENQUEUE, 1, 1, 1 },
+            { ENQUEUE, 2, 1, 2 },
+            { ENQUEUE, 3, 1, 3 },
+            { ENQUEUE, 4, 1, 5 },
+            { DEQUEUE, 3, 2, 5 },
+            { CLEAR, 0, 0, 0 },
         },
         {
-            { TestCommand<int>::ENQUEUE, 20 },
-            { TestCommand<int>::ENQUEUE, 5 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::ENQUEUE, 10 },
-            { TestCommand<int>::ENQUEUE, 15 },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 15 },
-            { TestCommand<int>::SIZE, 0, 1 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
-            { TestCommand<int>::ENQUEUE, 20 },
-            { TestCommand<int>::ENQUEUE, 5 },
-            { TestCommand<int>::ENQUEUE, 10 },
-            { TestCommand<int>::ENQUEUE, 15 },
-            { TestCommand<int>::FRONT, 20 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 5 },
-            { TestCommand<int>::SIZE, 0, 3 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 10 },
-            { TestCommand<int>::SIZE, 0, 2 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 15 },
-            { TestCommand<int>::SIZE, 0, 1 },
-            { TestCommand<int>::DEQUEUE },
+            { ENQUEUE, 1, 20, 20 },
+            { ENQUEUE, 2, 20, 5 },
+            { DEQUEUE, 1, 5, 5 },
+            { DEQUEUE, 0, 0, 0 },
+            { ENQUEUE, 1, 10, 10 },
+            { ENQUEUE, 2, 10, 15 },
+            { DEQUEUE, 1, 15, 15 },
+            { CLEAR, 0, 0, 0 },
+            { ENQUEUE, 1, 20, 20 },
+            { ENQUEUE, 2, 20, 5 },
+            { ENQUEUE, 3, 20, 10 },
+            { ENQUEUE, 4, 20, 15 },
+            { DEQUEUE, 3, 5, 15 },
+            { DEQUEUE, 2, 10, 15 },
+            { DEQUEUE, 1, 15, 15 },
+            { DEQUEUE, 0, 0, 0 },
         },
         {
-            { TestCommand<int>::ENQUEUE, 1 },
-            { TestCommand<int>::ENQUEUE, 2 },
-            { TestCommand<int>::ENQUEUE, 3 },
-            { TestCommand<int>::ENQUEUE, 4 },
-            { TestCommand<int>::ENQUEUE, 5 },
-            { TestCommand<int>::FRONT, 1 },
-            { TestCommand<int>::SIZE, 0, 5 },
-            { TestCommand<int>::DEQUEUE },
-            { TestCommand<int>::FRONT, 2 },
-            { TestCommand<int>::SIZE, 0, 4 },
-            { TestCommand<int>::CLEAR },
-            { TestCommand<int>::SIZE, 0 },
+            { ENQUEUE, 1, 1, 1 },
+            { ENQUEUE, 2, 1, 2 },
+            { ENQUEUE, 3, 1, 3 },
+            { ENQUEUE, 4, 1, 4 },
+            { ENQUEUE, 5, 1, 5 },
+            { DEQUEUE, 4, 2, 5 },
+            { CLEAR, 0, 0, 0 },
         }   
     };
 
