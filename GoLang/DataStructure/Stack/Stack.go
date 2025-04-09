@@ -10,10 +10,9 @@ type Stack struct {
 type StackCommandId int
 
 const (
-	push StackCommandId = iota
-	pop
-	top
-	clear
+	PUSH StackCommandId = iota
+	POP
+	CLEAR
 )
 
 type StackCommand struct {
@@ -63,62 +62,84 @@ func (st *Stack) Clear() {
 	st.topIndex = 0
 }
 
-func (st *Stack) ExecuteCommand(cmd StackCommand) {
+func (st *Stack) ExecuteCommand(cmd StackCommand) bool {
 	switch cmd.command {
-	case push:
+	case PUSH:
 		st.Push(cmd.value)
 
-	case pop:
+	case POP:
 		st.Pop()
 
-	case top:
-		if cmd.value != st.Top() {
-			panic(fmt.Sprintf("Stack Top does not match expected: %d, got: %d ", cmd.value, st.Top().(int)))
-		}
-
-	case clear:
+	case CLEAR:
 		st.Clear()
 	}
 
 	if cmd.size != st.Size() {
-		panic(fmt.Sprintf("Stack Size does not match expected: %d, got: %d ", cmd.size, st.Size()))
+		fmt.Printf("Stack Size does not match expected: %d, got: %d\n", cmd.size, st.Size())
+		return false
 	}
+
+	if cmd.size != 0 {
+		if cmd.value != st.Top() {
+			fmt.Printf("Stack Top does not match expected: %d, got: %d ", cmd.value, st.Top())
+			return false
+		}
+	}
+	return true
 }
 
-func RunTestCommands(test []StackCommand) {
+func RunTestCommands(test []StackCommand) bool {
 	st := NewStack()
-	for _, cmd := range test {
-		st.ExecuteCommand(cmd)
+	for commandIndex, cmd := range test {
+		if !st.ExecuteCommand(cmd) {
+			fmt.Printf("Command %d failed\n", commandIndex)
+			return false
+		}
 	}
+	return true
 }
 
 func main() {
 	testlist := [][]StackCommand{
 		{
-			{push, 1, 10},
-			{push, 2, 20},
-			{pop, 1, 0},
-			{top, 1, 10},
-			{push, 2, 30},
-			{top, 2, 30},
+			{PUSH, 1, 1},
+			{PUSH, 2, 2},
+			{PUSH, 3, 3},
+			{POP, 2, 2},
+			{CLEAR, 0, 0},
 		},
 		{
-			{push, 1, 10},
-			{push, 2, 20},
-			{push, 3, 40},
-			{push, 4, 80},
-			{push, 5, 20},
-			{push, 6, 100},
-			{top, 6, 100},
-			{pop, 5, 0},
-			{push, 6, 30},
-			{top, 6, 30},
-			{clear, 0, 0},
+			{PUSH, 1, 3},
+			{PUSH, 2, 1},
+			{PUSH, 3, 2},
+			{PUSH, 4, 3},
+			{PUSH, 5, 8},
+			{POP, 4, 3},
+			{CLEAR, 0, 0},
+		},
+		{
+			{PUSH, 1, 10},
+			{PUSH, 2, 20},
+			{POP, 1, 10},
+			{PUSH, 2, 30},
+		},
+		{
+			{PUSH, 1, 10},
+			{PUSH, 2, 20},
+			{PUSH, 3, 40},
+			{PUSH, 4, 80},
+			{PUSH, 5, 20},
+			{PUSH, 6, 100},
+			{POP, 5, 20},
+			{PUSH, 6, 30},
+			{CLEAR, 0, 0},
 		},
 	}
 
 	for index, test := range testlist {
 		fmt.Printf("Runnig Test: %d\n", index+1)
-		RunTestCommands(test)
+		if !RunTestCommands(test) {
+			fmt.Printf("Test %d failed\n", index+1)
+		}
 	}
 }
